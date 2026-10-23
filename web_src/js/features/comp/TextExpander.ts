@@ -6,6 +6,7 @@ import {createElementFromAttrs, createElementFromHTML} from '../../utils/dom.ts'
 import {getIssueColorClass, getIssueIcon} from '../issue.ts';
 import {errorName} from '../../modules/errors.ts';
 import {debounce} from '../../utils/func.ts';
+import {builtinSlashCommands, loadSavedReplyCommands, matchSlashCommands, renderSlashSuggestions} from './SlashCommands.ts';
 import type TextExpanderElement from '@github/text-expander-element';
 import type {TextExpanderChangeEvent, TextExpanderResult} from '@github/text-expander-element';
 
@@ -31,11 +32,21 @@ async function fetchIssueSuggestions(key: string, text: string, signal: AbortSig
   return {matched: true, fragment: ul};
 }
 
+// block-level markdown (tables, lists, fences) only renders when it starts its own line
+function isAtLineStart(textarea: HTMLTextAreaElement, key: string): boolean {
+  const beforeCaret = textarea.value.substring(0, textarea.selectionStart);
+  const keyPos = beforeCaret.lastIndexOf(key);
+  return keyPos <= 0 || beforeCaret[keyPos - 1] === '\n';
+}
+
 export function initTextExpander(expander: TextExpanderElement) {
   if (!expander) return;
 
   const textarea = expander.querySelector<HTMLTextAreaElement>('textarea')!;
   const mentionsUrl = expander.closest('[data-mentions-url]')?.getAttribute('data-mentions-url');
+  const savedRepliesUrl = expander.getAttribute('data-saved-replies-url');
+  const slashLabels: Record<string, string> = JSON.parse(expander.getAttribute('data-slash-labels') || '{}');
+  const builtinCommands = builtinSlashCommands(slashLabels);
 
   // help to fix the text-expander "multiword+promise" bug: do not show the popup when there is no "#" before current line
   const shouldShowIssueSuggestions = () => {
@@ -124,6 +135,13 @@ export function initTextExpander(expander: TextExpanderElement) {
       })());
     } else if (key === '#') {
       provide(debouncedIssueSuggestions(key, text));
+    } else if (key === '/') {
+      provide((async (): Promise<TextExpanderResult> => {
+        const savedReplies = savedRepliesUrl ? await loadSavedReplyCommands(savedRepliesUrl, slashLabels.saved_reply ?? '') : [];
+        const matches = matchSlashCommands([...builtinCommands, ...savedReplies], text);
+        if (!matches.length) return {matched: false};
+        return {matched: true, fragment: renderSlashSuggestions(matches)};
+      })());
     }
   });
 
@@ -132,7 +150,8 @@ export function initTextExpander(expander: TextExpanderElement) {
     if (detail?.item) {
       // add a space after @mentions and #issue as it's likely the user wants one
       const suffix = ['@', '#'].includes(detail.key) ? ' ' : '';
-      detail.value = `${detail.item.getAttribute('data-value')}${suffix}`;
+      const prefix = detail.item.hasAttribute('data-block') && !isAtLineStart(textarea, detail.key) ? '\n' : '';
+      detail.value = `${prefix}${detail.item.getAttribute('data-value')}${suffix}`;
     }
   });
 }

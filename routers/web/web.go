@@ -751,6 +751,11 @@ func registerWebRoutes(m *web.Router, webAuth *AuthMiddleware) {
 			m.Get("", user_setting.BlockedUsers)
 			m.Post("", web.Bind[*forms.BlockUserForm](), user_setting.BlockedUsersPost)
 		})
+
+		m.Group("/replies", func() {
+			m.Combo("").Get(user_setting.SavedReplies).Post(user_setting.SavedRepliesPost)
+			m.Get("/list", user_setting.SavedRepliesList)
+		})
 	}, reqSignIn, user_setting.SettingsCtxData)
 
 	m.Group("/user", func() {

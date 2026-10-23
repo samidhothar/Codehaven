@@ -25,6 +25,9 @@
 		<a class="{{if .PageIsSettingsBlockedUsers}}active {{end}}item" href="{{AppSubUrl}}/user/settings/blocked_users">
 			{{ctx.Locale.Tr "user.block.list"}}
 		</a>
+		<a class="{{if .PageIsSettingsSavedReplies}}active {{end}}item" href="{{AppSubUrl}}/user/settings/replies">
+			{{ctx.Locale.Tr "settings.saved_replies"}}
+		</a>
 		<a class="{{if .PageIsSettingsApplications}}active {{end}}item" href="{{AppSubUrl}}/user/settings/applications">
 			{{ctx.Locale.Tr "settings.applications"}}
 		</a>

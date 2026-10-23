@@ -69,7 +69,10 @@
 				{{end}}
 			</div>
 		</markdown-toolbar>
-		<text-expander keys=": @ #" multiword="#" suffix="">
+		<text-expander keys=": @ # /" multiword="#" suffix=""
+			{{if ctx.RootData.IsSigned}}data-saved-replies-url="{{AppSubUrl}}/user/settings/replies/list"{{end}}
+			data-slash-labels="{{JsonUtils.EncodeToString (dict "table" (ctx.Locale.Tr "editor.slash.table") "checklist" (ctx.Locale.Tr "editor.slash.checklist") "details" (ctx.Locale.Tr "editor.slash.details") "code" (ctx.Locale.Tr "editor.slash.code") "mermaid" (ctx.Locale.Tr "editor.slash.mermaid") "quote" (ctx.Locale.Tr "editor.slash.quote") "saved_reply" (ctx.Locale.Tr "editor.slash.saved_reply"))}}"
+		>
 			<textarea class="markdown-text-editor"
 				{{if .TextareaName}}name="{{.TextareaName}}"{{end}} {{if .TextareaMaxLength}}maxlength="{{.TextareaMaxLength}}"{{end}}
 				{{if .TextareaPlaceholder}}placeholder="{{.TextareaPlaceholder}}"{{end}} {{if $ariaLabel}}aria-label="{{$ariaLabel}}"{{end}}

@@ -1,0 +1,43 @@
+{{template "user/settings/layout_head" (dict "pageClass" "user settings saved-replies")}}
+	<div class="user-setting-content">
+		<h4 class="ui top attached header">
+			{{ctx.Locale.Tr "settings.saved_replies"}}
+		</h4>
+		<div class="ui attached segment">
+			<p>{{ctx.Locale.Tr "settings.saved_replies.desc"}}</p>
+			<form class="ui form form-fetch-action ignore-dirty" action="{{.Link}}" method="post">
+				<input type="hidden" name="action" value="add">
+				<div class="required field">
+					<label>{{ctx.Locale.Tr "settings.saved_replies.title"}}</label>
+					<input name="title" maxlength="{{.MaxSavedReplyTitleLength}}" required>
+				</div>
+				<div class="required field">
+					<label>{{ctx.Locale.Tr "settings.saved_replies.content"}}</label>
+					<textarea name="content" rows="4" maxlength="{{.MaxSavedReplyContentLength}}" required></textarea>
+				</div>
+				<button type="submit" class="ui primary button"{{if not .CanAddSavedReply}} disabled{{end}}>{{ctx.Locale.Tr "settings.saved_replies.add"}}</button>
+			</form>
+		</div>
+		<div class="ui attached segment">
+			<div class="flex-divided-list items-with-main">
+				{{range $index, $reply := .SavedReplies}}
+					<div class="item">
+						<div class="item-main">
+							<div class="item-title">{{$reply.Title}}</div>
+							<div class="item-body tw-whitespace-pre-wrap">{{$reply.Content}}</div>
+						</div>
+						<div class="item-trailing">
+							<form class="form-fetch-action" action="{{$.Link}}" method="post">
+								<input type="hidden" name="action" value="delete">
+								<input type="hidden" name="index" value="{{$index}}">
+								<button type="submit" class="ui compact mini button">{{ctx.Locale.Tr "remove"}}</button>
+							</form>
+						</div>
+					</div>
+				{{else}}
+					<div class="item">{{ctx.Locale.Tr "settings.saved_replies.none"}}</div>
+				{{end}}
+			</div>
+		</div>
+	</div>
+{{template "user/settings/layout_footer" .}}
