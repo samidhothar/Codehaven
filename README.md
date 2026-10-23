@@ -4,17 +4,37 @@ A modern, keyboard-first take on [Gitea](https://github.com/go-gitea/gitea): sel
 
 CodeHaven is a fork of Gitea (MIT licensed). Everything Gitea does still works the same way; CodeHaven adds interface improvements on top and ships a ready-to-use theme kit you can rebrand in minutes.
 
+![CodeHaven home page](contrib/codehaven/screenshots/home.jpg)
+
 ## What's new compared to Gitea
 
 | Feature | What you get |
 |---|---|
-| **Command palette** | Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) anywhere, or click the search icon in the navbar. Fuzzy-search pages, repositories and people; type `#123` in a repository or `owner/repo#123` anywhere to jump straight to an issue or pull request. |
+| **Command palette** | Press <kbd>Ctrl</kbd>+<kbd>K</kbd> (<kbd>⌘</kbd>+<kbd>K</kbd> on macOS) anywhere, or click the search icon in the navbar. Fuzzy-search pages, people and (when signed in) repositories; type `#123` in a repository or `owner/repo#123` anywhere to jump straight to an issue or pull request. |
 | **Palette actions** | Create an issue or pull request in the current repository, copy the page link, or switch theme, without leaving the keyboard. Only actions you are allowed to use are listed. |
 | **Keyboard list navigation** | On issue and pull request lists, <kbd>j</kbd>/<kbd>k</kbd> move between items, <kbd>o</kbd> opens one and <kbd>x</kbd> selects it for bulk actions. Press <kbd>?</kbd> to see every shortcut on the page. |
 | **Auto-saved comment drafts** | Unsent comments and new issue or pull request descriptions survive reloads, closed tabs and crashes. Drafts stay in your browser only and are removed when you submit, clear the text, or after 7 days. |
 | **User hover cards** | Hover an author, avatar or `@mention` to see the person's avatar, name, bio, location and follower counts. |
 | **Page transitions** | Pages cross-fade while the navbar stays in place. Turned off automatically when your system asks for reduced motion. |
 | **CodeHaven theme kit** | Accessible light, dark and auto themes (WCAG AA contrast), a redesigned home page and a Docker Compose setup, all applied through Gitea's custom folder without touching the core code. |
+
+## Screenshots
+
+**Command palette**: actions for the current repository, its pages, and live search, all from <kbd>Ctrl</kbd>+<kbd>K</kbd>.
+
+![Command palette](contrib/codehaven/screenshots/command-palette.jpg)
+
+**Keyboard navigation**: <kbd>j</kbd>/<kbd>k</kbd> highlight and focus issues; <kbd>o</kbd> opens and <kbd>x</kbd> selects.
+
+![Issue list with keyboard navigation](contrib/codehaven/screenshots/keyboard-navigation.jpg)
+
+**User hover cards**: profile details on any author link, avatar or `@mention`.
+
+![User hover card on a mention](contrib/codehaven/screenshots/hover-card.jpg)
+
+**CodeHaven Dark**: every page in the accessible dark theme.
+
+![Issue page in the CodeHaven Dark theme](contrib/codehaven/screenshots/dark-theme.jpg)
 
 ## Quick start with Docker
 
