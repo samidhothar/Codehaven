@@ -4,6 +4,16 @@
 	<div class="ui container flex-container">
 		<div class="flex-container-main">
 			{{template "base/alert" .}}
+			<div class="dashboard-quick-actions">
+				<a class="ui small primary button" href="{{AppSubUrl}}/repo/create">{{svg "octicon-plus"}} {{ctx.Locale.Tr "new_repo"}}</a>
+				{{if not .DisableMigrations}}
+				<a class="ui small basic button" href="{{AppSubUrl}}/repo/migrate">{{svg "octicon-repo-push"}} {{ctx.Locale.Tr "new_migrate"}}</a>
+				{{end}}
+				{{if .SignedUser.CanCreateOrganization}}
+				<a class="ui small basic button" href="{{AppSubUrl}}/org/create">{{svg "octicon-organization"}} {{ctx.Locale.Tr "new_org"}}</a>
+				{{end}}
+				<a class="ui small basic button" href="{{AppSubUrl}}/explore/repos">{{svg "octicon-telescope"}} {{ctx.Locale.Tr "explore_title"}}</a>
+			</div>
 			{{template "user/heatmap" .}}
 			{{if .Page.Paginator.TotalPages}}
 				{{template "user/dashboard/feeds" .}}

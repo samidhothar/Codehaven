@@ -1,0 +1,163 @@
+:root {
+  --focus-glow: 0 0 0 3px color-mix(in srgb, var(--color-primary) 22%, transparent);
+}
+
+/* panels read as cards */
+.ui.segment:not(.attached, .basic),
+.ui.bottom.attached.segment {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-shadow) 50%, transparent);
+}
+
+.ui.attached.header,
+.ui.top.attached.header {
+  font-weight: var(--font-weight-semibold);
+}
+
+/* list rows react to the pointer, so it is clear they are one clickable unit */
+.flex-divided-list.items-with-main > .item {
+  padding-inline: 10px;
+  border-radius: var(--border-radius);
+  transition: background-color 0.12s;
+}
+
+.flex-divided-list.items-with-main > .item:hover {
+  background: color-mix(in srgb, var(--color-primary) 6%, transparent);
+}
+
+.flex-divided-list.items-with-main > .item:hover + .item,
+.flex-divided-list.items-with-main > .item + .item:hover {
+  border-top-color: transparent;
+}
+
+#activity-feed .item-trailing .svg {
+  width: 20px;
+  height: 20px;
+  opacity: 0.7;
+}
+
+/* labels and counters as pills */
+.ui.label:not(.scope-left, .scope-middle, .scope-right) {
+  border-radius: var(--border-radius-full);
+}
+
+.ui.label.scope-left {
+  border-top-left-radius: var(--border-radius-full);
+  border-bottom-left-radius: var(--border-radius-full);
+}
+
+.ui.label.scope-right {
+  border-top-right-radius: var(--border-radius-full);
+  border-bottom-right-radius: var(--border-radius-full);
+}
+
+/* inputs show a soft glow on focus instead of only a border change */
+.ui.input input:focus,
+.ui.form input:not([type="checkbox"], [type="radio"]):focus,
+.ui.form textarea:focus,
+.ui.form select:focus,
+.ui.selection.dropdown.active {
+  box-shadow: var(--focus-glow);
+}
+
+/* buttons */
+.ui.primary.button:not(.basic, .disabled) {
+  box-shadow: 0 1px 2px color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+.ui.primary.button:not(.basic, .disabled):hover {
+  box-shadow: 0 3px 8px color-mix(in srgb, var(--color-primary) 35%, transparent);
+}
+
+/* menus and popups float above the page */
+.ui.dropdown .menu,
+.ui.menu .dropdown.item .menu {
+  border-radius: var(--border-radius-medium) !important; /* fomantic sets per-corner radii with !important */
+  box-shadow: 0 8px 24px var(--color-shadow) !important;
+}
+
+.ui.dropdown .menu > .item {
+  border-radius: var(--border-radius);
+  margin: 2px 4px;
+}
+
+/* the current page in the navbar and in side menus */
+#navbar .navbar-left > .item.active {
+  background: color-mix(in srgb, var(--color-primary) 12%, transparent);
+  color: var(--color-primary);
+}
+
+.ui.vertical.menu .active.item {
+  box-shadow: inset 3px 0 0 var(--color-primary);
+  font-weight: var(--font-weight-semibold);
+}
+
+.ui.vertical.menu .item {
+  transition: background-color 0.12s;
+}
+
+/* a visible search box for the command palette, so it is discoverable without knowing Ctrl+K */
+#navbar .navbar-search-trigger {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 260px;
+  height: 34px;
+  margin: auto 8px;
+  padding: 0 6px 0 10px;
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--border-radius);
+  background: var(--color-input-background);
+  color: var(--color-text-light-2);
+}
+
+#navbar .navbar-search-trigger:hover {
+  border-color: var(--color-primary);
+  background: var(--color-input-background);
+  color: var(--color-text);
+}
+
+#navbar .navbar-search-trigger .navbar-search-text {
+  flex: 1;
+  text-align: start;
+  font-size: 13px;
+}
+
+#navbar .navbar-search-trigger kbd {
+  padding: 1px 6px;
+  border: 1px solid var(--color-secondary);
+  border-radius: 4px;
+  background: var(--color-box-header);
+  color: var(--color-text-light-2);
+  font-size: 11px;
+  font-family: var(--fonts-monospace);
+}
+
+@media (max-width: 1100px) {
+  #navbar .navbar-search-trigger {
+    min-width: 0;
+    border-color: transparent;
+    background: none;
+  }
+  #navbar .navbar-search-trigger .navbar-search-text,
+  #navbar .navbar-search-trigger kbd {
+    display: none;
+  }
+}
+
+.dashboard-quick-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 16px;
+}
+
+.dashboard-quick-actions .ui.button {
+  margin: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .flex-divided-list.items-with-main > .item,
+  .ui.vertical.menu .item {
+    transition: none;
+  }
+}

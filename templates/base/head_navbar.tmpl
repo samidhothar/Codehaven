@@ -35,7 +35,7 @@
 	</div>
 
 	{{if not (and .IsSigned .MustChangePassword)}}
-		<button type="button" class="item btn" data-global-init="initCommandPalette" aria-keyshortcuts="Control+K Meta+K" data-shortcut-keys="Control+K"
+		<button type="button" class="item btn navbar-search-trigger" data-global-init="initCommandPalette" aria-keyshortcuts="Control+K Meta+K" data-shortcut-keys="Control+K"
 			{{if .IsSigned}}data-signed-in{{end}}
 			aria-label="{{ctx.Locale.Tr "search.command_palette"}}" data-tooltip-content="{{ctx.Locale.Tr "search.command_palette"}} (Ctrl+K)"
 			{{with .Repository}}data-repo-link="{{$.RepoLink}}" data-repo-full-name="{{.FullName}}"{{end}}
@@ -55,7 +55,7 @@
 			data-locale-result-one="{{ctx.Locale.Tr "search.command_palette_result_one"}}"
 			data-locale-results="{{ctx.Locale.Tr "search.command_palette_results"}}"
 			data-locale-sign-in-repos="{{ctx.Locale.Tr "search.command_palette_sign_in_repos"}}"
-		>{{svg "octicon-search"}}</button>
+		>{{svg "octicon-search"}}<span class="navbar-search-text">{{ctx.Locale.Tr "search.command_palette_trigger"}}</span><kbd>Ctrl K</kbd></button>
 	{{end}}
 
 	{{template "base/head_navbar_icons"}}

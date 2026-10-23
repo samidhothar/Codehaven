@@ -2,6 +2,7 @@ import {createApp} from 'vue';
 import {registerGlobalInitFunc} from '../modules/observer.ts';
 import {showModal} from '../modules/modal.ts';
 import {calcMatchedWeight, strSubMatch} from './repo-findfile.ts';
+import {isMac} from '../utils.ts';
 
 export type CommandPaletteItem = {
   label: string,
@@ -142,6 +143,8 @@ async function openCommandPalette(trigger: HTMLElement) {
 export function initCommandPalette() {
   registerGlobalInitFunc('initCommandPalette', (trigger: HTMLElement) => {
     trigger.addEventListener('click', () => openCommandPalette(trigger));
+    const kbd = trigger.querySelector('kbd');
+    if (kbd && isMac) kbd.textContent = '⌘ K';
     document.addEventListener('keydown', (e) => {
       if (e.defaultPrevented || e.isComposing || e.repeat || e.altKey || e.shiftKey) return;
       if (!(e.ctrlKey || e.metaKey) || e.key.toLowerCase() !== 'k') return;

@@ -1,4 +1,4 @@
-import {registerGlobalInitFunc} from './observer.ts';
+import {registerGlobalEventFunc, registerGlobalInitFunc} from './observer.ts';
 import {createElementFromHTML, hideElem, toggleElem} from '../utils/dom.ts';
 import {showModal} from './modal.ts';
 import {html, htmlRaw} from '../utils/html.ts';
@@ -121,6 +121,7 @@ export function registerShortcutHandler(name: string, handler: ShortcutHandler) 
 
 export function initGlobalShortcut() {
   registerGlobalInitFunc('onGlobalShortcut', initShortcutKbd);
+  registerGlobalEventFunc('click', 'onShowShortcutHelp', showShortcutHelp);
 
   // A <kbd> element next to an <input> declares a keyboard shortcut for that input.
   // When the matching key is pressed, the sibling input is focused.
