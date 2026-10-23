@@ -2,6 +2,7 @@ import {diffTreeStore, diffTreeStoreSetViewed} from '../modules/diff-file.ts';
 import {setFileFolding} from './file-fold.ts';
 import {POST} from '../modules/fetch.ts';
 import {trString} from '../modules/i18n.ts';
+import {showTemporaryTooltip} from '../modules/tippy.ts';
 
 const {pageData} = window.config;
 // it is undefined on most pages, fortunately, when it is accessed by the related functions, it exists
@@ -73,6 +74,27 @@ export function initExpandAndCollapseFilesButton() {
     for (const box of document.querySelectorAll<HTMLElement>('.file-content:not([data-folded="true"])')) {
       if (box.getAttribute('id') === 'diff-incomplete') continue;
       setFileFolding(box, box.querySelector('.fold-file')!, true);
+    }
+  });
+}
+
+// jumps to the next file below the current position that is not marked as viewed, wrapping around to the first one
+export function initNextUnviewedFileButton() {
+  const btn = document.querySelector<HTMLElement>('#next-unviewed-file');
+  if (!btn) return;
+  btn.addEventListener('click', () => {
+    const boxes = [...document.querySelectorAll<HTMLElement>('#diff-file-boxes .diff-file-box')]
+      .filter((box) => box.querySelector(`.viewed-file-form:not(.${viewedStyleClass})`));
+    if (!boxes.length) {
+      showTemporaryTooltip(btn, btn.getAttribute('data-text-all-viewed')!);
+      return;
+    }
+    const offset = parseFloat(getComputedStyle(boxes[0]).scrollMarginTop) || 0;
+    const target = boxes.find((box) => box.getBoundingClientRect().top > offset + 1) ?? boxes[0];
+    if (window.location.hash === `#${target.id}`) {
+      target.scrollIntoView();
+    } else {
+      window.location.hash = target.id; // lets the diff page load the file and select it in the file tree
     }
   });
 }

@@ -1,0 +1,16 @@
+<div class="issue-sticky-bar" data-global-init="initIssueStickyBar" inert>
+	<div class="ui container issue-sticky-bar-inner">
+		<span class="issue-sticky-bar-state"></span>
+		<button type="button" class="issue-sticky-bar-title" data-sticky-action="top">
+			<span class="tw-truncate">{{.Issue.Title}}</span>
+			<span class="index">#{{.Issue.Index}}</span>
+		</button>
+		<div class="issue-sticky-bar-actions">
+			<button type="button" class="ui compact small basic icon button" data-sticky-action="prev" aria-label="{{ctx.Locale.Tr "repo.issues.sticky_bar.previous_comment"}}" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.sticky_bar.previous_comment"}}">{{svg "octicon-chevron-up"}}</button>
+			<button type="button" class="ui compact small basic icon button" data-sticky-action="next" aria-label="{{ctx.Locale.Tr "repo.issues.sticky_bar.next_comment"}}" data-tooltip-content="{{ctx.Locale.Tr "repo.issues.sticky_bar.next_comment"}}">{{svg "octicon-chevron-down"}}</button>
+			<button type="button" class="ui compact small basic icon button" data-clipboard-text="{{.Issue.HTMLURL ctx}}" aria-label="{{ctx.Locale.Tr "copy_link"}}" data-tooltip-content="{{ctx.Locale.Tr "copy_link"}}">{{svg "octicon-link"}}</button>
+			<button type="button" class="ui compact small basic button not-mobile tw-hidden" data-sticky-action="status"></button>
+			<button type="button" class="ui compact small primary button tw-hidden" data-sticky-action="comment">{{ctx.Locale.Tr "repo.issues.create_comment"}}</button>
+		</div>
+	</div>
+</div>

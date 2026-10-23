@@ -20,6 +20,7 @@ export function initRepoDeployMenu() {
     createTippy(button, {
       content,
       role: 'dialog',
+      theme: 'default',
       trigger: 'click',
       interactive: true,
       hideOnClick: true,

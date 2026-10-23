@@ -50,6 +50,7 @@
 @import "./features/captcha.css";
 @import "./features/user-card.css";
 @import "./features/repo-deploy.css";
+@import "./features/interactions.css";
 
 @import "./markup/content.css";
 @import "./markup/codeblock.css";

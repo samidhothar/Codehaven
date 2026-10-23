@@ -1,0 +1,188 @@
+.ui.button,
+.btn {
+  transition: background-color 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s, transform 0.08s;
+}
+
+.ui.button:not(.disabled, .dropdown, .submit-loading):active,
+.btn:not(.disabled, .submit-loading):active {
+  transform: translateY(1px);
+}
+
+.submit-loading {
+  pointer-events: none;
+}
+
+.back-to-top {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 900;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--border-radius-full);
+  background: var(--color-box-body);
+  color: var(--color-text);
+  box-shadow: 0 4px 12px var(--color-shadow);
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(8px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+}
+
+.back-to-top.visible {
+  opacity: 1;
+  visibility: visible;
+  transform: none;
+}
+
+.back-to-top:hover {
+  background: var(--color-hover);
+  color: var(--color-primary);
+}
+
+.issue-sticky-bar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 800;
+  background: var(--color-body);
+  border-bottom: 1px solid var(--color-secondary);
+  box-shadow: 0 2px 8px var(--color-shadow);
+  transform: translateY(-110%);
+  visibility: hidden;
+  transition: transform 0.2s, visibility 0.2s;
+}
+
+.issue-sticky-bar.visible {
+  transform: none;
+  visibility: visible;
+}
+
+.issue-sticky-bar-inner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 48px;
+}
+
+.issue-sticky-bar .issue-state-label {
+  margin: 0;
+}
+
+.issue-sticky-bar-title {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: 6px;
+  min-width: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--color-text);
+  font-size: 15px;
+  font-weight: var(--font-weight-semibold);
+  text-align: start;
+  cursor: pointer;
+}
+
+.issue-sticky-bar-title .index {
+  flex-shrink: 0;
+  color: var(--color-text-light-2);
+  font-weight: var(--font-weight-normal);
+}
+
+.issue-sticky-bar-actions {
+  display: flex;
+  flex-shrink: 0;
+  align-items: center;
+  gap: 4px;
+}
+
+.issue-sticky-bar-actions .ui.button {
+  margin: 0;
+}
+
+.render-content.markup.comment-collapsed {
+  max-height: 480px;
+  overflow: hidden;
+  mask-image: linear-gradient(to bottom, #000 calc(100% - 96px), transparent);
+}
+
+.comment-collapse-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  width: 100%;
+  margin-top: 8px;
+  padding: 6px;
+  border: 1px solid var(--color-secondary);
+  border-radius: var(--border-radius);
+  background: var(--color-box-body);
+  color: var(--color-primary);
+  font-size: 13px;
+  cursor: pointer;
+}
+
+.comment-collapse-toggle:hover {
+  background: var(--color-hover);
+}
+
+.floating-quote-reply.ui.button {
+  position: absolute;
+  z-index: 850;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin: 0;
+  box-shadow: 0 4px 12px var(--color-shadow);
+}
+
+.pull-checkout-popup {
+  max-width: 480px;
+  padding: 10px 12px;
+}
+
+.pull-checkout-commands {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px;
+  border-radius: var(--border-radius);
+  background: var(--color-markup-code-block);
+}
+
+.pull-checkout-commands pre {
+  font-family: var(--fonts-monospace);
+  font-size: 12px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.file-view.code-view.code-nowrap {
+  overflow-x: auto;
+}
+
+.file-view.code-view.code-nowrap .code-inner {
+  white-space: pre;
+  overflow-wrap: normal;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ui.button,
+  .btn,
+  .back-to-top,
+  .issue-sticky-bar {
+    transition: none;
+  }
+  .ui.button:active,
+  .btn:active {
+    transform: none;
+  }
+}

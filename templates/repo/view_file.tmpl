@@ -59,6 +59,9 @@
 						<button type="button" class="ui mini basic button escape-button">{{ctx.Locale.Tr "repo.escape_control_characters"}}</button>
 					{{end}}
 				</div>
+				{{if .IsDisplayingSource}}
+				<button type="button" class="ui mini basic button file-wrap-toggle tw-hidden" data-global-init="initFileWrapToggle" aria-pressed="true">{{ctx.Locale.Tr "text_line_wrap"}}</button>
+				{{end}}
 				<a download class="btn-octicon" data-tooltip-content="{{ctx.Locale.Tr "repo.download_file"}}" href="{{$.RawFileLink}}">{{svg "octicon-download"}}</a>
 				<a class="btn-octicon {{if not .CanCopyContent}}disabled{{end}}" data-global-click="onCopyContentButtonClick"
 					{{if not .IsDisplayingSource}}data-raw-file-link="{{$.RawFileLink}}"{{end}}

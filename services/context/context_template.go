@@ -186,6 +186,9 @@ func (c TemplateContext) WindowConfig() map[string]any {
 			"user_following":        locale.Tr("user.following"),
 			"editor_draft_restored": locale.Tr("editor.draft_restored"),
 			"editor_draft_discard":  locale.Tr("editor.draft_discard"),
+			"back_to_top":           locale.Tr("back_to_top"),
+			"show_more":             locale.Tr("show_more"),
+			"show_less":             locale.Tr("show_less"),
 		},
 	}
 }

@@ -1,0 +1,14 @@
+{{$pull := .Issue.PullRequest}}
+{{$args := $pull.GetInstructionsCliArgs}}
+{{$gitRemoteName := ctx.RootData.SystemConfig.Repository.GitGuideRemoteName.Value ctx}}
+{{$cmd := printf "git fetch -u %s %s:%s\ngit checkout %s" $gitRemoteName $pull.GetGitHeadRefName $args.LocalBranchArg $args.LocalBranchArg}}
+<button type="button" class="ui small basic button" data-global-init="initPullCheckoutButton" aria-haspopup="dialog">
+	{{svg "octicon-terminal"}}<span class="not-mobile">{{ctx.Locale.Tr "repo.pulls.cmd_instruction_checkout_title"}}</span>{{svg "octicon-triangle-down" 14}}
+</button>
+<div class="pull-checkout-popup tw-hidden">
+	<div class="tw-mb-2">{{ctx.Locale.Tr "repo.pulls.cmd_instruction_checkout_desc"}}</div>
+	<div class="pull-checkout-commands">
+		<pre class="tw-flex-1 tw-m-0">{{$cmd}}</pre>
+		<button type="button" class="btn interact-fg tw-p-2" data-clipboard-text="{{$cmd}}" data-tooltip-content="{{ctx.Locale.Tr "copy"}}" aria-label="{{ctx.Locale.Tr "copy"}}">{{svg "octicon-copy" 14}}</button>
+	</div>
+</div>

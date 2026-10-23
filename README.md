@@ -17,6 +17,8 @@ CodeHaven is a fork of Gitea (MIT licensed). Everything Gitea does still works t
 | **User hover cards** | Hover an author, avatar or `@mention` to see the person's avatar, name, bio, location and follower counts. |
 | **Page transitions** | Pages cross-fade while the navbar stays in place. Turned off automatically when your system asks for reduced motion. |
 | **Jenkins deployments to a VM** | Pick an environment, a branch, when to deploy and how from dropdowns in the repository settings; CodeHaven creates and runs the Jenkins pipeline, deploys over SSH, and shows each environment's status in a **Deploy** menu and next to the commit. No pipeline file to write. |
+| **Faster issue and pull request pages** | A bar with the status, comment navigation, Close and Comment stays on screen while you scroll; select text in a comment to quote it; long comments fold behind **Show more**; a **Checkout** button gives the commands to try a pull request locally; **Next unviewed file** jumps through a review. |
+| **Smoother buttons and code view** | Buttons respond to presses, save buttons show a spinner and ignore double clicks, long pages get a back-to-top button, and code files have a **Wrap** toggle that is remembered. |
 | **Issue search, slash commands and saved replies** | <kbd>Ctrl</kbd>+<kbd>K</kbd> also finds issues and pull requests by title; type `/` in any comment for tables, task lists, diagrams and your saved replies. |
 | **CodeHaven theme kit** | Accessible light, dark and auto themes (WCAG AA contrast), a redesigned home page and a Docker Compose setup, all applied through Gitea's custom folder without touching the core code. |
 

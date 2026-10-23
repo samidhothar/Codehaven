@@ -3,6 +3,7 @@
 	{{template "repo/header" .}}
 	<div class="ui container">
 		{{template "repo/issue/view_title" .}}
+		{{template "repo/issue/view_sticky_bar" .}}
 		{{if .Issue.IsPull}}
 			{{template "repo/pulls/tab_menu" .}}
 		{{end}}

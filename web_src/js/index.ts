@@ -69,6 +69,12 @@ import {initCommandPalette} from './features/command-palette.ts';
 import {initListKeyboardNav} from './features/list-keyboard-nav.ts';
 import {initUserCard} from './features/user-card.ts';
 import {initRepoDeployMenu} from './features/repo-deploy.ts';
+import {initGlobalSubmitLoading} from './features/common-submit-loading.ts';
+import {initBackToTop} from './features/back-to-top.ts';
+import {initRepoIssueStickyBar} from './features/repo-issue-sticky-bar.ts';
+import {initRepoIssueCommentTools} from './features/repo-issue-comment-tools.ts';
+import {initRepoPullCheckoutButton} from './features/repo-pull-checkout.ts';
+import {initRepoFileWrapToggle} from './features/repo-file-wrap.ts';
 import {initProjectWorkflow} from './features/project-workflow.ts';
 import {initDevtest} from './modules/devtest.ts';
 import {initRepoWatch} from './features/repo-watch.ts';
@@ -97,6 +103,12 @@ const initPerformanceTracer = callInitFunctions([
   initListKeyboardNav,
   initUserCard,
   initRepoDeployMenu,
+  initGlobalSubmitLoading,
+  initBackToTop,
+  initRepoIssueStickyBar,
+  initRepoIssueCommentTools,
+  initRepoPullCheckoutButton,
+  initRepoFileWrapToggle,
 
   initCommonIssueListQuickGoto,
 

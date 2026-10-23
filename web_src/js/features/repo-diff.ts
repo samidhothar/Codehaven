@@ -2,7 +2,7 @@ import {createApp} from 'vue';
 import DiffFileTree from '../components/DiffFileTree.vue';
 import {initRepoIssueContentHistory} from './repo-issue-content.ts';
 import {validateTextareaNonEmpty} from './comp/ComboMarkdownEditor.ts';
-import {initExpandAndCollapseFilesButton, initDiffFileViewedForm} from './pull-view-file.ts';
+import {initExpandAndCollapseFilesButton, initDiffFileViewedForm, initNextUnviewedFileButton} from './pull-view-file.ts';
 import {showErrorToast} from '../modules/toast.ts';
 import {queryElemSiblings, hideElem, showElem, animateOnce, addDelegatedEventListener, createElementFromHTML, queryElems} from '../utils/dom.ts';
 import {errorMessage} from '../modules/errors.ts';
@@ -271,6 +271,7 @@ export function initRepoDiffView() {
   if (!document.querySelector('#diff-file-boxes')) return;
   initRepoDiffConversationNav(); // "previous" and "next" buttons only appear on "diff" page
   initExpandAndCollapseFilesButton();
+  initNextUnviewedFileButton();
 
   // onLocationHashChange does very complicated things (e.g.: load incomplete content and scroll), and it might change the URL hash
   // so make it run after all other hash change listeners

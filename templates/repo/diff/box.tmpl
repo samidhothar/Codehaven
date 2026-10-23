@@ -31,6 +31,7 @@
 					</label>
 					<progress id="viewed-files-summary" value="{{.NumViewedFiles}}" max="{{.DiffShortStat.NumFiles}}"></progress>
 				</div>
+				<button type="button" id="next-unviewed-file" class="ui compact small basic icon button not-mobile" data-text-all-viewed="{{ctx.Locale.Tr "repo.pulls.all_files_viewed"}}" aria-label="{{ctx.Locale.Tr "repo.pulls.next_unviewed_file"}}" data-tooltip-content="{{ctx.Locale.Tr "repo.pulls.next_unviewed_file"}}">{{svg "octicon-eye"}}</button>
 			{{end}}
 			{{template "repo/diff/whitespace_dropdown" .}}
 			{{template "repo/diff/options_dropdown" .}}
