@@ -1,0 +1,7 @@
+@import "./theme-codehaven-light.css" (prefers-color-scheme: light);
+@import "./theme-codehaven-dark.css" (prefers-color-scheme: dark);
+
+gitea-theme-meta-info {
+  --theme-display-name: "CodeHaven Auto";
+  --theme-color-scheme: "auto";
+}

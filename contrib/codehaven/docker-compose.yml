@@ -1,0 +1,26 @@
+name: codehaven
+
+services:
+  gitea:
+    build:
+      context: ../..
+    image: codehaven:local
+    container_name: codehaven
+    restart: unless-stopped
+    environment:
+      GITEA____APP_NAME: CodeHaven
+      GITEA__ui__DEFAULT_THEME: codehaven-auto
+      GITEA__ui__THEMES: codehaven-auto,codehaven-light,codehaven-dark,gitea-auto,gitea-light,gitea-dark
+      GITEA__server__ROOT_URL: http://localhost:3000/
+      GITEA__server__SSH_PORT: "2222"
+    ports:
+      - "3000:3000"
+      - "2222:22"
+    volumes:
+      - codehaven-data:/data
+      # mounted over the data volume's CustomPath (/data/gitea), so the branding lives in git, not in the volume
+      - ./custom/public:/data/gitea/public:ro
+      - ./custom/templates:/data/gitea/templates:ro
+
+volumes:
+  codehaven-data:

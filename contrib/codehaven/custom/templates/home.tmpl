@@ -1,0 +1,39 @@
+{{template "base/head" .}}
+<div role="main" aria-label="{{if .IsSigned}}{{ctx.Locale.Tr "dashboard"}}{{else}}{{ctx.Locale.Tr "home_title"}}{{end}}" class="page-content home codehaven-home">
+	<section class="codehaven-hero">
+		<img class="codehaven-hero-logo" width="160" height="160" src="{{AssetUrlPrefix}}/img/logo.svg" alt="{{ctx.Locale.Tr "logo"}}">
+		<h1 class="tw-text-balance">{{AppName}}</h1>
+		<p class="tw-text-balance">Self-hosted source control, code review and CI/CD with a modern, keyboard-first interface.</p>
+		<div class="flex-text-block tw-justify-center">
+			{{if .IsSigned}}
+				<a class="ui primary button" href="{{AppSubUrl}}/explore/repos">Explore repositories</a>
+			{{else}}
+				<a class="ui primary button" href="{{AppSubUrl}}/user/login">{{ctx.Locale.Tr "sign_in"}}</a>
+				<a class="ui basic button" href="{{AppSubUrl}}/explore/repos">Explore repositories</a>
+			{{end}}
+		</div>
+	</section>
+	<section class="codehaven-features">
+		<div class="codehaven-feature">
+			{{svg "octicon-git-pull-request" 28}}
+			<h2>Code review</h2>
+			<p>Pull requests with required approvals, CODEOWNERS and protected branches.</p>
+		</div>
+		<div class="codehaven-feature">
+			{{svg "octicon-play" 28}}
+			<h2>CI/CD</h2>
+			<p>Built-in Actions, compatible with GitHub Actions workflows, running on your own runners.</p>
+		</div>
+		<div class="codehaven-feature">
+			{{svg "octicon-package" 28}}
+			<h2>Packages</h2>
+			<p>Private registries for containers, npm, Maven, PyPI, Go and more.</p>
+		</div>
+		<div class="codehaven-feature">
+			{{svg "octicon-project" 28}}
+			<h2>Planning</h2>
+			<p>Issues, milestones and project boards next to the code they track.</p>
+		</div>
+	</section>
+</div>
+{{template "base/footer" .}}
