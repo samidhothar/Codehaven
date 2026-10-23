@@ -1,0 +1,29 @@
+{{template "repo/settings/layout_head" (dict "pageClass" "repository settings deployments")}}
+<div class="repo-setting-content">
+	<h4 class="ui top attached header">
+		{{ctx.Locale.Tr "repo.settings.deployments"}}
+	</h4>
+	<div class="ui attached segment">
+		<p>{{ctx.Locale.Tr "repo.settings.deployments.desc"}}</p>
+		{{if not .DeployEnabled}}
+			<div class="ui warning message">{{ctx.Locale.Tr "repo.settings.deployments.disabled"}}</div>
+		{{end}}
+		<p class="help">{{ctx.Locale.Tr "repo.settings.deployments.ssh_help" .DeploySSHCredentialsID}}</p>
+	</div>
+	<div class="ui attached segment flex-relaxed-list">
+		{{range .DeployEnvironments}}
+			<details class="repo-deploy-env">
+				<summary>
+					<span class="tw-font-semibold">{{ctx.Locale.Tr (printf "repo.deployments.env.%s" .Name)}}</span>
+					<span class="text grey">· {{ctx.Locale.Tr (printf "repo.deployments.trigger.%s" .Trigger)}} · {{.Branch}} → {{.User}}@{{.Host}}:{{.Path}}</span>
+				</summary>
+				{{template "repo/settings/deployment_form" (dict "ctxData" $ "env" . "isNew" false)}}
+			</details>
+		{{end}}
+		<details class="repo-deploy-env" {{if not .DeployEnvironments}}open{{end}}>
+			<summary class="tw-font-semibold">{{ctx.Locale.Tr "repo.settings.deployments.add"}}</summary>
+			{{template "repo/settings/deployment_form" (dict "ctxData" $ "env" .NewDeployEnvironment "isNew" true)}}
+		</details>
+	</div>
+</div>
+{{template "repo/settings/layout_footer" .}}

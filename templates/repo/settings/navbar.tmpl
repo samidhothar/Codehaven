@@ -17,6 +17,11 @@
 				{{ctx.Locale.Tr "repo.settings.hooks"}}
 			</a>
 		{{end}}
+		{{if and EnableJenkinsDeployments (.Repository.UnitEnabled ctx ctx.Consts.RepoUnitTypeCode)}}
+			<a class="{{if .PageIsSettingsDeployments}}active {{end}}item" href="{{.RepoLink}}/settings/deployments">
+				{{ctx.Locale.Tr "repo.settings.deployments"}}
+			</a>
+		{{end}}
 		{{if .Repository.UnitEnabled ctx ctx.Consts.RepoUnitTypeCode}}
 			<a class="{{if .PageIsSettingsBranches}}active {{end}}item" href="{{.RepoLink}}/settings/branches">
 				{{ctx.Locale.Tr "repo.settings.branches"}}

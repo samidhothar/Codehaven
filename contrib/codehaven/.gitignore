@@ -1,0 +1,2 @@
+# holds the Jenkins password, never commit it
+.env

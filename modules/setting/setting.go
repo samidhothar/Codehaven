@@ -230,6 +230,7 @@ func LoadSettings() {
 	loadMailsFrom(CfgProvider)
 	loadProxyFrom(CfgProvider)
 	loadWebhookFrom(CfgProvider)
+	loadJenkinsFrom(CfgProvider)
 	loadMigrationsFrom(CfgProvider)
 	loadIndexerFrom(CfgProvider)
 	loadTaskFrom(CfgProvider)

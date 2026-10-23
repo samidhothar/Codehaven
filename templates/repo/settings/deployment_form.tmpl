@@ -1,0 +1,66 @@
+{{$ctxData := .ctxData}}{{$env := .env}}
+<form class="ui form form-fetch-action ignore-dirty tw-mt-4" action="{{$ctxData.RepoLink}}/settings/deployments" method="post">
+	<input type="hidden" name="action" value="save">
+	<div class="three fields">
+		<div class="required field">
+			<label>{{ctx.Locale.Tr "repo.settings.deployments.environment"}}</label>
+			{{if .isNew}}
+				<select name="name">
+					{{range $ctxData.DeployEnvironmentNames}}<option value="{{.}}">{{ctx.Locale.Tr (printf "repo.deployments.env.%s" .)}}</option>{{end}}
+				</select>
+			{{else}}
+				<input type="hidden" name="name" value="{{$env.Name}}">
+				<input value="{{ctx.Locale.Tr (printf "repo.deployments.env.%s" $env.Name)}}" readonly>
+			{{end}}
+		</div>
+		<div class="required field">
+			<label>{{ctx.Locale.Tr "repo.settings.deployments.trigger"}}</label>
+			<select name="trigger">
+				{{range $ctxData.DeployTriggers}}<option value="{{.}}"{{if eq . $env.Trigger}} selected{{end}}>{{ctx.Locale.Tr (printf "repo.deployments.trigger.%s" .)}}</option>{{end}}
+			</select>
+		</div>
+		<div class="required field">
+			<label>{{ctx.Locale.Tr "repo.settings.deployments.branch"}}</label>
+			<select name="branch">
+				{{range $ctxData.DeployBranches}}<option value="{{.}}"{{if eq . $env.Branch}} selected{{end}}>{{.}}</option>{{end}}
+			</select>
+		</div>
+	</div>
+	<div class="required field">
+		<label>{{ctx.Locale.Tr "repo.settings.deployments.preset"}}</label>
+		<select name="preset">
+			{{range $ctxData.DeployPresets}}<option value="{{.}}"{{if eq . $env.Preset}} selected{{end}}>{{ctx.Locale.Tr (printf "repo.deployments.preset.%s" .)}}</option>{{end}}
+		</select>
+	</div>
+	<div class="four fields">
+		<div class="required field">
+			<label>{{ctx.Locale.Tr "repo.settings.deployments.host"}}</label>
+			<input name="host" value="{{$env.Host}}" placeholder="vm.example.com" required>
+		</div>
+		<div class="required field">
+			<label>{{ctx.Locale.Tr "repo.settings.deployments.port"}}</label>
+			<input name="port" type="number" min="1" max="65535" value="{{$env.Port}}" required>
+		</div>
+		<div class="required field">
+			<label>{{ctx.Locale.Tr "repo.settings.deployments.user"}}</label>
+			<input name="user" value="{{$env.User}}" placeholder="deploy" required>
+		</div>
+		<div class="required field">
+			<label>{{ctx.Locale.Tr "repo.settings.deployments.path"}}</label>
+			<input name="path" value="{{$env.Path}}" placeholder="/srv/app" required>
+		</div>
+	</div>
+	<div class="field">
+		<label>{{ctx.Locale.Tr "repo.settings.deployments.command"}}</label>
+		<input name="command" value="{{$env.Command}}" maxlength="500" placeholder="systemctl restart app">
+		<p class="help">{{ctx.Locale.Tr "repo.settings.deployments.command_help"}}</p>
+	</div>
+	<div class="flex-text-block">
+		<button type="submit" class="ui primary button">{{ctx.Locale.Tr (Iif .isNew "repo.settings.deployments.add" "repo.settings.deployments.save")}}</button>
+		{{if not .isNew}}
+			<button type="button" class="ui red basic button link-action" data-url="{{$ctxData.RepoLink}}/settings/deployments?action=delete&name={{$env.Name}}"
+				data-modal-confirm="{{ctx.Locale.Tr "repo.settings.deployments.delete_confirm"}}"
+			>{{ctx.Locale.Tr "repo.settings.deployments.delete"}}</button>
+		{{end}}
+	</div>
+</form>

@@ -1251,6 +1251,8 @@ func registerWebRoutes(m *web.Router, webAuth *AuthMiddleware) {
 			m.Post("/delete", repo_setting.DeleteDeployKey)
 		})
 
+		m.Combo("/deployments").Get(repo_setting.Deployments).Post(repo_setting.DeploymentsPost)
+
 		m.Group("/lfs", func() {
 			m.Get("/", repo_setting.LFSFiles)
 			m.Get("/show/{oid}", repo_setting.LFSFileGet)
@@ -1490,6 +1492,11 @@ func registerWebRoutes(m *web.Router, webAuth *AuthMiddleware) {
 			m.Post("/restore", repo.RestoreBranchPost)
 			m.Post("/rename", web.Bind[*forms.RenameBranchForm](), repo_setting.RenameBranchPost)
 			m.Post("/merge-upstream", repo.MergeUpstream)
+		}, context.RepoMustNotBeArchived(), reqRepoCodeWriter, repo.MustBeNotEmpty)
+
+		m.Group("/deployments", func() {
+			m.Get("/menu", repo.DeploymentsMenu)
+			m.Post("/{env}/run", repo.DeploymentRun)
 		}, context.RepoMustNotBeArchived(), reqRepoCodeWriter, repo.MustBeNotEmpty)
 
 		m.Combo("/fork").Get(repo.Fork).Post(web.Bind[*forms.CreateRepoForm](), repo.ForkPost)

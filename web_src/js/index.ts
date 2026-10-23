@@ -68,6 +68,7 @@ import {initGlobalShortcut} from './modules/shortcut.ts';
 import {initCommandPalette} from './features/command-palette.ts';
 import {initListKeyboardNav} from './features/list-keyboard-nav.ts';
 import {initUserCard} from './features/user-card.ts';
+import {initRepoDeployMenu} from './features/repo-deploy.ts';
 import {initProjectWorkflow} from './features/project-workflow.ts';
 import {initDevtest} from './modules/devtest.ts';
 import {initRepoWatch} from './features/repo-watch.ts';
@@ -95,6 +96,7 @@ const initPerformanceTracer = callInitFunctions([
   initCommandPalette,
   initListKeyboardNav,
   initUserCard,
+  initRepoDeployMenu,
 
   initCommonIssueListQuickGoto,
 

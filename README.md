@@ -16,6 +16,8 @@ CodeHaven is a fork of Gitea (MIT licensed). Everything Gitea does still works t
 | **Auto-saved comment drafts** | Unsent comments and new issue or pull request descriptions survive reloads, closed tabs and crashes. Drafts stay in your browser only and are removed when you submit, clear the text, or after 7 days. |
 | **User hover cards** | Hover an author, avatar or `@mention` to see the person's avatar, name, bio, location and follower counts. |
 | **Page transitions** | Pages cross-fade while the navbar stays in place. Turned off automatically when your system asks for reduced motion. |
+| **Jenkins deployments to a VM** | Pick an environment, a branch, when to deploy and how from dropdowns in the repository settings; CodeHaven creates and runs the Jenkins pipeline, deploys over SSH, and shows each environment's status in a **Deploy** menu and next to the commit. No pipeline file to write. |
+| **Issue search, slash commands and saved replies** | <kbd>Ctrl</kbd>+<kbd>K</kbd> also finds issues and pull requests by title; type `/` in any comment for tables, task lists, diagrams and your saved replies. |
 | **CodeHaven theme kit** | Accessible light, dark and auto themes (WCAG AA contrast), a redesigned home page and a Docker Compose setup, all applied through Gitea's custom folder without touching the core code. |
 
 ## Screenshots
@@ -43,6 +45,7 @@ Requirements: Docker with Docker Compose.
 ```sh
 git clone https://github.com/samidhothar/Codehaven.git
 cd Codehaven/contrib/codehaven
+cp .env.example .env    # then set JENKINS_ADMIN_PASSWORD in .env
 docker compose up -d --build
 ```
 
@@ -56,6 +59,22 @@ The first build compiles the frontend and backend from source and takes several 
 Data is kept in the `codehaven-data` Docker volume, so it survives restarts and rebuilds. To update after pulling new code, run `docker compose up -d --build` again.
 
 If port 3000 or 2222 is already in use, change the left-hand side of the `ports` entries in [`contrib/codehaven/docker-compose.yml`](contrib/codehaven/docker-compose.yml) and update `GITEA__server__ROOT_URL` and `GITEA__server__SSH_PORT` to match.
+
+## Deploy to a VM with Jenkins
+
+The Docker setup includes a pre-configured Jenkins and a small test VM, connected automatically:
+
+1. Copy `contrib/codehaven/.env.example` to `.env` and set `JENKINS_ADMIN_PASSWORD`.
+2. Run `docker compose up -d --build`. On first start an SSH key pair is generated; Jenkins gets the private key as the credential `codehaven-vm-ssh` and the test VM trusts the public key.
+3. In a repository, open **Settings → Deployments** and add an environment: choose Development, Staging or Production, the branch, **On every push** or **Manually**, and the deployment type (static files, Docker Compose or a custom command). For the bundled test VM use host `test-vm`, user `deploy` and a folder such as `/srv/app`.
+4. Push to the branch, or use the **Deploy** menu in the repository header. The deployed files of the test VM are served on <http://localhost:8081>.
+
+To deploy to a real machine, add the public key to `~/.ssh/authorized_keys` of the SSH user there (print it with `docker compose exec test-vm cat /run/codehaven-keys/id_ed25519.pub`) and change the host and user of the environment. Jenkins clones over HTTP from CodeHaven, so the repository must be readable without signing in, for example public.
+
+| Service | Address |
+|---|---|
+| Jenkins | <http://localhost:8080> (sign in with the admin account from `.env`) |
+| Test VM web server | <http://localhost:8081> |
 
 ## Make it your own
 

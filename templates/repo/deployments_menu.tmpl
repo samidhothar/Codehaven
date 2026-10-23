@@ -1,0 +1,33 @@
+<div class="repo-deploy-menu">
+	{{range .DeployEnvironments}}
+		{{$envLabel := ctx.Locale.Tr (printf "repo.deployments.env.%s" .Name)}}
+		<div class="repo-deploy-item">
+			<span class="repo-deploy-status" data-tooltip-content="{{if .Last}}{{ctx.Locale.Tr (printf "repo.deployments.status.%s" .Last.Status)}}{{else}}{{ctx.Locale.Tr "repo.deployments.never"}}{{end}}">
+				{{if not .Last}}{{svg "octicon-circle" 16 "tw-text-text-light-3"}}
+				{{else if eq .Last.Status "success"}}{{svg "octicon-check-circle-fill" 16 "tw-text-green"}}
+				{{else if eq .Last.Status "pending"}}{{svg "octicon-dot-fill" 16 "tw-text-yellow"}}
+				{{else}}{{svg "octicon-x-circle-fill" 16 "tw-text-red"}}{{end}}
+			</span>
+			<div class="repo-deploy-info">
+				<div class="tw-font-semibold">{{$envLabel}}</div>
+				<div class="text small grey">{{.Branch}} → {{.User}}@{{.Host}}:{{.Path}}</div>
+				<div class="text small grey">
+					{{if .Last}}
+						{{ShortSha .Last.CommitSHA}} · {{.Last.Doer}} · {{DateUtils.TimeSince .Last.Time}}
+						{{if .Last.BuildURL}} · <a href="{{.Last.BuildURL}}" target="_blank" rel="noopener">Jenkins</a>{{end}}
+					{{else}}
+						{{ctx.Locale.Tr "repo.deployments.never"}}
+					{{end}}
+				</div>
+			</div>
+			<button type="button" class="ui tiny primary button link-action" data-url="{{$.RepoLink}}/deployments/{{.Name}}/run"
+				data-modal-confirm="{{ctx.Locale.Tr "repo.deployments.confirm" .Branch $envLabel}}"
+			>{{ctx.Locale.Tr "repo.deployments.deploy"}}</button>
+		</div>
+	{{else}}
+		<div class="repo-deploy-empty">
+			{{ctx.Locale.Tr "repo.deployments.none"}}
+			{{if $.Permission.IsAdmin}}<a href="{{$.RepoLink}}/settings/deployments">{{ctx.Locale.Tr "repo.deployments.configure"}}</a>{{end}}
+		</div>
+	{{end}}
+</div>

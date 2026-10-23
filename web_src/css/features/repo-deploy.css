@@ -1,0 +1,41 @@
+.repo-deploy-menu-content {
+  min-width: 320px;
+  min-height: 48px;
+}
+
+.repo-deploy-menu {
+  display: flex;
+  flex-direction: column;
+  max-width: 440px;
+}
+
+.repo-deploy-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 8px 4px;
+}
+
+.repo-deploy-item + .repo-deploy-item {
+  border-top: 1px solid var(--color-secondary);
+}
+
+.repo-deploy-status {
+  flex-shrink: 0;
+  padding-top: 2px;
+}
+
+.repo-deploy-info {
+  flex: 1;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.repo-deploy-empty {
+  padding: 8px 4px;
+}
+
+.repo-deploy-env > summary {
+  cursor: pointer;
+  padding: 6px 0;
+}

@@ -1,26 +1,78 @@
 name: codehaven
 
+# Ports can be changed in .env when the defaults are already in use, see .env.example
 services:
   gitea:
     build:
       context: ../..
     image: codehaven:local
-    container_name: codehaven
     restart: unless-stopped
     environment:
       GITEA____APP_NAME: CodeHaven
       GITEA__ui__DEFAULT_THEME: codehaven-auto
       GITEA__ui__THEMES: codehaven-auto,codehaven-light,codehaven-dark,gitea-auto,gitea-light,gitea-dark
-      GITEA__server__ROOT_URL: http://localhost:3000/
-      GITEA__server__SSH_PORT: "2222"
+      GITEA__server__ROOT_URL: http://localhost:${CODEHAVEN_HTTP_PORT:-3000}/
+      GITEA__server__SSH_PORT: ${CODEHAVEN_SSH_PORT:-2222}
+      GITEA__jenkins__ENABLED: "true"
+      GITEA__jenkins__URL: http://jenkins:8080
+      GITEA__jenkins__PUBLIC_URL: http://localhost:${JENKINS_HTTP_PORT:-8080}
+      GITEA__jenkins__USER: ${JENKINS_ADMIN_USER:-admin}
+      GITEA__jenkins__TOKEN: ${JENKINS_ADMIN_PASSWORD:?Set JENKINS_ADMIN_PASSWORD in .env, see .env.example}
+      # Jenkins clones from inside the container network, where the browser address does not work
+      GITEA__jenkins__CLONE_BASE_URL: http://gitea:3000
     ports:
-      - "3000:3000"
-      - "2222:22"
+      - "${CODEHAVEN_HTTP_PORT:-3000}:3000"
+      - "${CODEHAVEN_SSH_PORT:-2222}:22"
     volumes:
       - codehaven-data:/data
       # mounted over the data volume's CustomPath (/data/gitea), so the branding lives in git, not in the volume
       - ./custom/public:/data/gitea/public:ro
       - ./custom/templates:/data/gitea/templates:ro
+    depends_on:
+      - jenkins
+
+  jenkins:
+    build:
+      context: ./jenkins
+    image: codehaven-jenkins:local
+    restart: unless-stopped
+    environment:
+      JENKINS_ADMIN_USER: ${JENKINS_ADMIN_USER:-admin}
+      JENKINS_ADMIN_PASSWORD: ${JENKINS_ADMIN_PASSWORD:?Set JENKINS_ADMIN_PASSWORD in .env, see .env.example}
+      JENKINS_PUBLIC_URL: http://localhost:${JENKINS_HTTP_PORT:-8080}/
+    ports:
+      - "${JENKINS_HTTP_PORT:-8080}:8080"
+    volumes:
+      - jenkins-home:/var/jenkins_home
+      - deploy-keys:/run/codehaven-keys:ro
+    depends_on:
+      keygen:
+        condition: service_completed_successfully
+
+  # stand-in for the deployment target, replace its host and SSH user in the repository's Deployments settings for a real VM
+  test-vm:
+    build:
+      context: ./test-vm
+    image: codehaven-test-vm:local
+    restart: unless-stopped
+    ports:
+      - "${TEST_VM_HTTP_PORT:-8081}:8081"
+    volumes:
+      - deploy-keys:/run/codehaven-keys:ro
+    depends_on:
+      keygen:
+        condition: service_completed_successfully
+
+  # creates the deployment SSH key pair once, Jenkins gets the private key and the test VM trusts the public key
+  keygen:
+    image: alpine:3.22
+    command: >-
+      sh -c "[ -f /keys/id_ed25519 ] || { apk add --no-cache openssh-keygen >/dev/null && ssh-keygen -q -t ed25519 -N '' -C codehaven-deploy -f /keys/id_ed25519; };
+      chown 1000:1000 /keys/id_ed25519 && chmod 600 /keys/id_ed25519"
+    volumes:
+      - deploy-keys:/keys
 
 volumes:
   codehaven-data:
+  jenkins-home:
+  deploy-keys:

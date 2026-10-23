@@ -108,6 +108,9 @@ func newFuncMapWebPage() template.FuncMap {
 		"DisableWebhooks": func() bool {
 			return setting.DisableWebhooks
 		},
+		"EnableJenkinsDeployments": func() bool {
+			return setting.Jenkins.Enabled
+		},
 
 		// -----------------------------------------------------------------
 		// render
