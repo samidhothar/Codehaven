@@ -48,6 +48,7 @@
 @import "./features/cropper.css";
 @import "./features/console.css";
 @import "./features/captcha.css";
+@import "./features/user-card.css";
 
 @import "./markup/content.css";
 @import "./markup/codeblock.css";

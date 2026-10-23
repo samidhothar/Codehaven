@@ -60,11 +60,13 @@ import octiconKebabHorizontal from '../../public/assets/img/svg/octicon-kebab-ho
 import octiconLink from '../../public/assets/img/svg/octicon-link.svg';
 import octiconListOrdered from '../../public/assets/img/svg/octicon-list-ordered.svg';
 import octiconListUnordered from '../../public/assets/img/svg/octicon-list-unordered.svg';
+import octiconLocation from '../../public/assets/img/svg/octicon-location.svg';
 import octiconLock from '../../public/assets/img/svg/octicon-lock.svg';
 import octiconMeter from '../../public/assets/img/svg/octicon-meter.svg';
 import octiconMilestone from '../../public/assets/img/svg/octicon-milestone.svg';
 import octiconMirror from '../../public/assets/img/svg/octicon-mirror.svg';
 import octiconOrganization from '../../public/assets/img/svg/octicon-organization.svg';
+import octiconPeople from '../../public/assets/img/svg/octicon-people.svg';
 import octiconPlay from '../../public/assets/img/svg/octicon-play.svg';
 import octiconPlus from '../../public/assets/img/svg/octicon-plus.svg';
 import octiconProject from '../../public/assets/img/svg/octicon-project.svg';
@@ -153,11 +155,13 @@ const svgs = {
   'octicon-link': octiconLink,
   'octicon-list-ordered': octiconListOrdered,
   'octicon-list-unordered': octiconListUnordered,
+  'octicon-location': octiconLocation,
   'octicon-lock': octiconLock,
   'octicon-meter': octiconMeter,
   'octicon-milestone': octiconMilestone,
   'octicon-mirror': octiconMirror,
   'octicon-organization': octiconOrganization,
+  'octicon-people': octiconPeople,
   'octicon-play': octiconPlay,
   'octicon-plus': octiconPlus,
   'octicon-project': octiconProject,

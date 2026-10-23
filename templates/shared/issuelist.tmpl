@@ -1,5 +1,11 @@
 {{$root := ctx.RootData -}}
 {{$listType := .listType -}}
+<button type="button" class="tw-hidden" data-shortcut-keys="j" data-shortcut-handler="listNavNext" aria-label="{{ctx.Locale.Tr "keyboard.next_item"}}"></button>
+<button type="button" class="tw-hidden" data-shortcut-keys="k" data-shortcut-handler="listNavPrevious" aria-label="{{ctx.Locale.Tr "keyboard.previous_item"}}"></button>
+<button type="button" class="tw-hidden" data-shortcut-keys="o" data-shortcut-handler="listNavOpen" aria-label="{{ctx.Locale.Tr "keyboard.open_item"}}"></button>
+{{if $root.CanWriteIssuesOrPulls}}
+<button type="button" class="tw-hidden" data-shortcut-keys="x" data-shortcut-handler="listNavSelect" aria-label="{{ctx.Locale.Tr "keyboard.select_item"}}"></button>
+{{end}}
 <div id="issue-list" class="flex-divided-list items-with-main">
 	{{$approvalCounts := $root.ApprovalCounts}}
 	{{range $issue := $root.Issues}}

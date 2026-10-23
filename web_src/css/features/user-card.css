@@ -1,0 +1,36 @@
+.user-card {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 4px;
+  max-width: 320px;
+}
+
+.user-card-header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  color: var(--color-text);
+}
+
+.user-card-names {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.user-card-login {
+  color: var(--color-text-light-2);
+}
+
+.user-card-description {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.user-card-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  color: var(--color-text-light);
+}

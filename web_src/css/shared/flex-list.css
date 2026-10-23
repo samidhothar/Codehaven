@@ -122,3 +122,8 @@
 .flex-divided-list + .divider {
   margin-top: 0;
 }
+
+.flex-divided-list > .item.list-nav-active {
+  background: var(--color-hover);
+  box-shadow: inset 3px 0 0 var(--color-primary);
+}

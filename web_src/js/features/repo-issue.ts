@@ -11,6 +11,7 @@ import {
 } from '../utils/dom.ts';
 import {setFileFolding} from './file-fold.ts';
 import {ComboMarkdownEditor, getComboMarkdownEditor, initComboMarkdownEditor} from './comp/ComboMarkdownEditor.ts';
+import {initEditorDraft} from './comp/EditorDraft.ts';
 import {GET, POST} from '../modules/fetch.ts';
 import {showErrorToast} from '../modules/toast.ts';
 import {fomanticQuery} from '../modules/fomantic/base.ts';
@@ -442,6 +443,7 @@ async function initSingleCommentEditor(commentForm: HTMLFormElement) {
   // * normal new issue/pr page: no status-button, no comment-button (there is only a normal submit button which can submit empty content)
   // * issue/pr view page: with comment form, has status-button and comment-button
   const editor = await initComboMarkdownEditor(commentForm.querySelector('.combo-markdown-editor')!);
+  initEditorDraft(editor);
   const statusButton = document.querySelector<HTMLButtonElement>('#status-button');
   const commentButton = document.querySelector<HTMLButtonElement>('#comment-button');
   const syncUiState = () => {

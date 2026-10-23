@@ -65,6 +65,9 @@ import {initRepoViewFileTree} from './features/repo-view-file-tree.ts';
 import {initActionsPermissionsForm} from './features/common-actions-permissions.ts';
 import {initRefIssueContextPopup} from './features/ref-issue.ts';
 import {initGlobalShortcut} from './modules/shortcut.ts';
+import {initCommandPalette} from './features/command-palette.ts';
+import {initListKeyboardNav} from './features/list-keyboard-nav.ts';
+import {initUserCard} from './features/user-card.ts';
 import {initProjectWorkflow} from './features/project-workflow.ts';
 import {initDevtest} from './modules/devtest.ts';
 import {initRepoWatch} from './features/repo-watch.ts';
@@ -89,6 +92,9 @@ const initPerformanceTracer = callInitFunctions([
   initGlobalComboMarkdownEditor,
   initGlobalInput,
   initGlobalShortcut,
+  initCommandPalette,
+  initListKeyboardNav,
+  initUserCard,
 
   initCommonIssueListQuickGoto,
 
