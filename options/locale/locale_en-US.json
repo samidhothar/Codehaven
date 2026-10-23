@@ -200,6 +200,7 @@
   "search.command_palette_people": "People and organizations",
   "search.command_palette_go_to_issue": "Go to issue or pull request %s",
   "search.command_palette_actions": "Actions",
+  "search.command_palette_issues": "Issues and pull requests",
   "search.command_palette_result_one": "1 result",
   "search.command_palette_results": "%d results",
   "search.command_palette_sign_in_repos": "Sign in to search repositories",

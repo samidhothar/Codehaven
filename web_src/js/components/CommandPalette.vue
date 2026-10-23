@@ -10,6 +10,7 @@ import {generateElemId} from '../utils/dom.ts';
 import {pathEscape, urlQueryEscape} from '../utils/url.ts';
 import {parseIssueListQuickGotoLink} from '../features/common-issue-list.ts';
 import type {CommandPaletteItem, CommandPaletteLocale, CommandPaletteFilter} from '../features/command-palette.ts';
+import {toIssueResultItems, type IssueResultIcon, type IssueSearchResult} from '../features/command-palette-issues.ts';
 
 const props = defineProps<{
   pageLinks: CommandPaletteItem[],
@@ -19,7 +20,7 @@ const props = defineProps<{
   filterItems: CommandPaletteFilter,
 }>();
 
-type ResultIcon = 'octicon-issue-opened' | 'octicon-git-pull-request' | 'octicon-link' | 'octicon-copy' | 'octicon-eye' | 'octicon-repo' | 'octicon-lock' | '';
+type ResultIcon = IssueResultIcon | 'octicon-link' | 'octicon-copy' | 'octicon-eye' | 'octicon-repo' | 'octicon-lock' | '';
 type ResultItem = CommandPaletteItem & {icon: ResultIcon, avatar?: string, run?: () => Promise<void> | void, isHint?: boolean};
 type ResultGroup = {name: string, items: ResultItem[]};
 
@@ -36,6 +37,7 @@ const selectedIndex = ref(0);
 const isLoading = ref(false);
 const repoResults = shallowRef<ResultItem[]>([]);
 const userResults = shallowRef<ResultItem[]>([]);
+const issueResults = shallowRef<ResultItem[]>([]);
 const themeItems = shallowRef<ResultItem[]>([]);
 let searchSeq = 0;
 
@@ -85,6 +87,7 @@ const groups = computed<ResultGroup[]>(() => {
     {name: '', items: issueUrl ? [{label: issueLabel, context: '', url: issueUrl, icon: 'octicon-issue-opened'}] : []},
     {name: props.locale.actions, items: actions.slice(0, maxPageLinks)},
     {name: props.locale.pages, items: pages.map((item): ResultItem => ({...item, icon: 'octicon-link'}))},
+    {name: props.locale.issues, items: issueResults.value},
     {name: props.locale.repositories, items: props.signedIn ? repoResults.value : signInForReposItems()},
     {name: props.locale.people, items: userResults.value},
   ];
@@ -116,16 +119,29 @@ async function readResultData(resp: Response | null) {
   }
 }
 
+async function readIssueResults(resp: Response | null): Promise<IssueSearchResult[]> {
+  if (!resp?.ok) return [];
+  try {
+    return await resp.json();
+  } catch {
+    return [];
+  }
+}
+
 async function fetchRemote(q: string) {
   const seq = ++searchSeq;
   isLoading.value = true;
   try {
-    const [repoResp, userResp] = await Promise.all([
+    // a bare "#123" is handled by the issue jump, searching titles for it only adds noise
+    const searchIssues = q && !/^#?\d+$/.test(q);
+    const [repoResp, userResp, issueResp] = await Promise.all([
       props.signedIn ? GET(`${appSubUrl}/repo/search?q=${urlQueryEscape(q)}&limit=${remoteLimit}&sort=updated&order=desc`) : null,
       q ? GET(`${appSubUrl}/user/search_candidates?q=${urlQueryEscape(q)}&orgs=true`) : null,
+      searchIssues ? GET(`${appSubUrl}/api/v1/repos/issues/search?q=${urlQueryEscape(q)}&state=all&limit=${remoteLimit}`) : null,
     ]);
-    const [repoData, userData] = await Promise.all([readResultData(repoResp), readResultData(userResp)]);
+    const [repoData, userData, issueData] = await Promise.all([readResultData(repoResp), readResultData(userResp), readIssueResults(issueResp)]);
     if (seq !== searchSeq || q !== query.value.trim()) return;
+    issueResults.value = toIssueResultItems(issueData, props.repoLink.substring(appSubUrl.length + 1), appSubUrl);
     repoResults.value = repoData.map(({repository: repo}: {repository: {full_name: string, link: string, private: boolean}}) => ({
       label: repo.full_name, context: '', url: repo.link, icon: repo.private ? 'octicon-lock' : 'octicon-repo',
     }));
