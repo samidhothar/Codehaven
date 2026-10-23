@@ -22,6 +22,9 @@ export type CommandPaletteLocale = {
   newPull: string,
   copyLink: string,
   theme: string,
+  resultOne: string,
+  results: string,
+  signInRepos: string,
 };
 
 function firstTextContent(el: Element): string {
@@ -57,6 +60,21 @@ export function collectPageLinks(doc: ParentNode, repoFullName: string): Command
 
 export type CommandPaletteFilter = typeof filterCommandItems;
 
+// returns -1 when the term doesn't match
+function termMatchWeight(haystack: string, term: string): number {
+  const idx = haystack.toLowerCase().indexOf(term);
+  if (idx >= 0) {
+    const atWordStart = idx === 0 || /[\s/_.:-]/.test(haystack[idx - 1]);
+    return term.length * term.length * (atWordStart ? 4 : 2);
+  }
+  // scattered letters only count for longer terms, otherwise "ma" matches any label with an "m" before an "a"
+  if (term.length < 4) return -1;
+  const res = strSubMatch(haystack, term);
+  const matchedSegments = Math.floor(res.length / 2);
+  if (!matchedSegments || matchedSegments > Math.ceil(term.length / 2)) return -1;
+  return calcMatchedWeight(res);
+}
+
 export function filterCommandItems<T extends CommandPaletteItem>(items: T[], query: string): T[] {
   const terms = query.trim().toLowerCase().split(/\s+/).filter(Boolean);
   if (!terms.length) return items;
@@ -65,12 +83,12 @@ export function filterCommandItems<T extends CommandPaletteItem>(items: T[], que
     // every term must match, in any order, so "demo issues" and "issues demo" both work
     let weight = 0;
     for (const term of terms) {
-      const res = strSubMatch(`${item.label} ${item.context}`, term);
-      if (res.length <= 1) {
+      const termWeight = termMatchWeight(`${item.label} ${item.context}`, term);
+      if (termWeight < 0) {
         weight = -1;
         break;
       }
-      weight += calcMatchedWeight(res);
+      weight += termWeight;
     }
     if (weight >= 0) matched.push({item, weight});
   }
@@ -99,10 +117,14 @@ async function createCommandPalette(trigger: HTMLElement): Promise<PaletteHandle
     newPull: trigger.getAttribute('data-locale-new-pull')!,
     copyLink: trigger.getAttribute('data-locale-copy-link')!,
     theme: trigger.getAttribute('data-locale-theme')!,
+    resultOne: trigger.getAttribute('data-locale-result-one')!,
+    results: trigger.getAttribute('data-locale-results')!,
+    signInRepos: trigger.getAttribute('data-locale-sign-in-repos')!,
   };
   const instance = createApp(CommandPalette, {
     pageLinks: collectPageLinks(document, trigger.getAttribute('data-repo-full-name') ?? ''),
     repoLink: trigger.getAttribute('data-repo-link') ?? '',
+    signedIn: trigger.hasAttribute('data-signed-in'),
     locale,
     filterItems: filterCommandItems,
   }).mount(dialog) as unknown as PaletteHandle['instance'];

@@ -100,3 +100,9 @@
 .combo-editor-container[data-combo-editor-page="previewer"] .dropzone {
   display: none;
 }
+
+.editor-draft-notice {
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--color-text-light);
+}

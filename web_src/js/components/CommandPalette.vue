@@ -14,12 +14,13 @@ import type {CommandPaletteItem, CommandPaletteLocale, CommandPaletteFilter} fro
 const props = defineProps<{
   pageLinks: CommandPaletteItem[],
   repoLink: string,
+  signedIn: boolean,
   locale: CommandPaletteLocale,
   filterItems: CommandPaletteFilter,
 }>();
 
 type ResultIcon = 'octicon-issue-opened' | 'octicon-git-pull-request' | 'octicon-link' | 'octicon-copy' | 'octicon-eye' | 'octicon-repo' | 'octicon-lock' | '';
-type ResultItem = CommandPaletteItem & {icon: ResultIcon, avatar?: string, run?: () => Promise<void> | void};
+type ResultItem = CommandPaletteItem & {icon: ResultIcon, avatar?: string, run?: () => Promise<void> | void, isHint?: boolean};
 type ResultGroup = {name: string, items: ResultItem[]};
 
 const {appSubUrl} = window.config;
@@ -84,13 +85,27 @@ const groups = computed<ResultGroup[]>(() => {
     {name: '', items: issueUrl ? [{label: issueLabel, context: '', url: issueUrl, icon: 'octicon-issue-opened'}] : []},
     {name: props.locale.actions, items: actions.slice(0, maxPageLinks)},
     {name: props.locale.pages, items: pages.map((item): ResultItem => ({...item, icon: 'octicon-link'}))},
-    {name: props.locale.repositories, items: repoResults.value},
+    {name: props.locale.repositories, items: props.signedIn ? repoResults.value : signInForReposItems()},
     {name: props.locale.people, items: userResults.value},
   ];
   return result.filter((group) => group.items.length);
 });
 
+// repository search requires signing in, so explain the missing results instead of silently showing none
+function signInForReposItems(): ResultItem[] {
+  if (!query.value.trim()) return [];
+  const redirectTo = urlQueryEscape(`${window.location.pathname}${window.location.search}`);
+  return [{label: props.locale.signInRepos, context: '', url: `${appSubUrl}/user/login?redirect_to=${redirectTo}`, icon: 'octicon-lock', isHint: true}];
+}
+
 const flatItems = computed(() => groups.value.flatMap((group) => group.items));
+
+const resultsAnnouncement = computed(() => {
+  if (!query.value.trim() || isLoading.value) return '';
+  const count = flatItems.value.filter((item) => !item.isHint).length;
+  if (!count) return props.locale.noResults;
+  return count === 1 ? props.locale.resultOne : props.locale.results.replace('%d', () => String(count));
+});
 
 async function readResultData(resp: Response | null) {
   if (!resp?.ok) return [];
@@ -106,7 +121,7 @@ async function fetchRemote(q: string) {
   isLoading.value = true;
   try {
     const [repoResp, userResp] = await Promise.all([
-      GET(`${appSubUrl}/repo/search?q=${urlQueryEscape(q)}&limit=${remoteLimit}&sort=updated&order=desc`),
+      props.signedIn ? GET(`${appSubUrl}/repo/search?q=${urlQueryEscape(q)}&limit=${remoteLimit}&sort=updated&order=desc`) : null,
       q ? GET(`${appSubUrl}/user/search_candidates?q=${urlQueryEscape(q)}&orgs=true`) : null,
     ]);
     const [repoData, userData] = await Promise.all([readResultData(repoResp), readResultData(userResp)]);
@@ -210,6 +225,7 @@ defineExpose({onOpen});
       <div v-if="!flatItems.length && !isLoading" class="command-palette-empty">{{ locale.noResults }}</div>
     </div>
     <div class="command-palette-hint">{{ locale.hint }}</div>
+    <div class="tw-sr-only" aria-live="polite">{{ resultsAnnouncement }}</div>
   </div>
 </template>
 

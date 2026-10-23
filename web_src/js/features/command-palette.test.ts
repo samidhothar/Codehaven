@@ -35,4 +35,13 @@ test('filterCommandItems', () => {
   expect(filterCommandItems(items, 'issues o/r')[0].url).toEqual('/o/r/issues');
   expect(filterCommandItems(items, 'o/r iss').map((i) => i.url)).toEqual(['/o/r/issues']);
   expect(filterCommandItems(items, 'iss xyz')).toEqual([]);
+
+  const ranked = [
+    {label: 'Switch theme: Auto', context: '', url: '/theme'},
+    {label: 'maria', context: 'Maria Santos', url: '/maria'},
+    {label: 'Pull Requests', context: '', url: '/pulls'},
+  ];
+  expect(filterCommandItems(ranked, 'ma').map((i) => i.url)).toEqual(['/maria']); // short terms need contiguous letters
+  expect(filterCommandItems(ranked, 'pullreq').map((i) => i.url)).toEqual(['/pulls']); // longer terms may skip letters
+  expect(filterCommandItems(ranked, 'theme').map((i) => i.url)).toEqual(['/theme']);
 });

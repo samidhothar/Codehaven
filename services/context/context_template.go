@@ -175,15 +175,17 @@ func (c TemplateContext) WindowConfig() map[string]any {
 		// make frontend cache i18n data in local storage and only update when the version is changed,
 		// then we can fill more keys here.
 		"i18n": map[string]any{
-			"error_occurred":   locale.Tr("error.occurred"),
-			"remove_label_str": locale.Tr("remove_label_str"),
-			"modal_confirm":    locale.Tr("modal.confirm"),
-			"modal_cancel":     locale.Tr("modal.cancel"),
-			"more_items":       locale.Tr("more_items"),
-			"copy_success":     locale.Tr("copy_success"),
-			"copy_error":       locale.Tr("copy_error"),
-			"user_followers":   locale.Tr("user.followers"),
-			"user_following":   locale.Tr("user.following"),
+			"error_occurred":        locale.Tr("error.occurred"),
+			"remove_label_str":      locale.Tr("remove_label_str"),
+			"modal_confirm":         locale.Tr("modal.confirm"),
+			"modal_cancel":          locale.Tr("modal.cancel"),
+			"more_items":            locale.Tr("more_items"),
+			"copy_success":          locale.Tr("copy_success"),
+			"copy_error":            locale.Tr("copy_error"),
+			"user_followers":        locale.Tr("user.followers"),
+			"user_following":        locale.Tr("user.following"),
+			"editor_draft_restored": locale.Tr("editor.draft_restored"),
+			"editor_draft_discard":  locale.Tr("editor.draft_discard"),
 		},
 	}
 }

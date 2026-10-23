@@ -62,7 +62,7 @@ function initRepoIssueListCheckboxes(issueSelectAll: HTMLInputElement) {
 
       // for delete
       if (action === 'delete') {
-        const confirmText = el.getAttribute('data-action-delete-confirm')!;
+        const confirmText = el.getAttribute('data-action-delete-confirm')!.replace('%d', () => String(issueIDs.split(',').length));
         if (!await confirmModal({content: confirmText, confirmButtonColor: 'red'})) {
           return;
         }

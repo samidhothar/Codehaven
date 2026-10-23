@@ -57,7 +57,7 @@ async function showUserCard(link: HTMLAnchorElement, name: string) {
   const user = await userInfoCache.get(name)!;
   if (!user) return;
   const {user_followers, user_following} = window.config.i18n;
-  createTippy(link, {
+  const tippy = createTippy(link, {
     theme: 'default',
     content: createElementFromHTML(renderUserCard(user, {followers: user_followers, following: user_following})),
     trigger: 'mouseenter focus',
@@ -65,14 +65,39 @@ async function showUserCard(link: HTMLAnchorElement, name: string) {
     interactive: true,
     role: 'dialog',
     interactiveBorder: 5,
-  }).show();
+  });
+  link.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') tippy.hide();
+  });
+  tippy.show();
+}
+
+async function showUserCardOrReset(link: HTMLAnchorElement, name: string) {
+  try {
+    await showUserCard(link, name);
+  } catch (err) {
+    console.error('Failed to load user info:', err);
+    link.removeAttribute('data-user-card-popup');
+  }
+}
+
+function claimUserCardLink(link: HTMLAnchorElement): string {
+  const name = getUserCardName(link);
+  if (!name || getAttachedTippyInstance(link)) return '';
+  link.setAttribute('data-user-card-popup', '');
+  return name;
 }
 
 export function initUserCard() {
+  // keyboard focus is deliberate, so the card opens without the hover delay
+  addDelegatedEventListener<HTMLAnchorElement, FocusEvent>(document, 'focusin', 'a[href]:not([data-user-card-popup])', (link) => {
+    const name = claimUserCardLink(link);
+    if (name) showUserCardOrReset(link, name);
+  });
+
   addDelegatedEventListener<HTMLAnchorElement, MouseEvent>(document, 'mouseover', 'a[href]:not([data-user-card-popup])', (link) => {
-    const name = getUserCardName(link);
-    if (!name || getAttachedTippyInstance(link)) return;
-    link.setAttribute('data-user-card-popup', '');
+    const name = claimUserCardLink(link);
+    if (!name) return;
 
     // delay so a mouse passing over the link doesn't fire a fetch
     let timer: TimeoutId;
@@ -81,14 +106,9 @@ export function initUserCard() {
       link.removeAttribute('data-user-card-popup');
       link.removeEventListener('mouseleave', cancel);
     };
-    timer = setTimeout(async () => {
+    timer = setTimeout(() => {
       link.removeEventListener('mouseleave', cancel);
-      try {
-        await showUserCard(link, name);
-      } catch (err) {
-        console.error('Failed to load user info:', err);
-        link.removeAttribute('data-user-card-popup');
-      }
+      showUserCardOrReset(link, name);
     }, 400);
     link.addEventListener('mouseleave', cancel);
   });

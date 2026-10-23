@@ -1,5 +1,8 @@
 import {localUserSettings} from '../../modules/user-settings.ts';
 import {debounce} from '../../utils/func.ts';
+import {createElementFromHTML} from '../../utils/dom.ts';
+import {html, htmlRaw} from '../../utils/html.ts';
+import {svg} from '../../svg.ts';
 import {EventEditorContentChanged} from './EditorMarkdown.ts';
 import type {ComboMarkdownEditor} from './ComboMarkdownEditor.ts';
 
@@ -32,13 +35,33 @@ export function initEditorDraft(editor: ComboMarkdownEditor) {
   if (!form || editor.value()) return;
 
   const key = `${form.getAttribute('action') || window.location.pathname}#${editor.textarea.name}`;
-  const draft = loadEditorDrafts(Date.now())[key];
-  if (draft) editor.value(draft.text);
-
   const save = debounce(() => saveEditorDraft(key, editor.value(), Date.now()), 500);
+  const draft = loadEditorDrafts(Date.now())[key];
+  // a visible notice, so restored text is never submitted without the user noticing it
+  let notice: HTMLElement | null = null;
+  if (draft) {
+    editor.value(draft.text);
+    const {editor_draft_restored, editor_draft_discard} = window.config.i18n;
+    notice = createElementFromHTML(html`
+      <div class="editor-draft-notice flex-text-block" role="status">
+        ${htmlRaw(svg('octicon-history', 14))}<span>${editor_draft_restored}</span>
+        <button type="button" class="ui mini basic button">${editor_draft_discard}</button>
+      </div>
+    `);
+    notice.querySelector('button')!.addEventListener('click', () => {
+      save.cancel();
+      editor.value('');
+      saveEditorDraft(key, '', Date.now());
+      notice!.remove();
+      editor.focus();
+    });
+    editor.container.before(notice);
+  }
+
   editor.container.addEventListener(EventEditorContentChanged, () => save());
   form.addEventListener('submit', () => {
     save.cancel();
     saveEditorDraft(key, '', Date.now());
+    notice?.remove();
   });
 }
