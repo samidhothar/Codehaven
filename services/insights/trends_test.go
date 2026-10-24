@@ -24,6 +24,8 @@ func TestWeekStarts(t *testing.T) {
 	}, weekStarts(saturday, 3))
 	monday := time.Date(2026, 10, 19, 0, 0, 0, 0, time.UTC)
 	assert.Equal(t, monday.Unix(), weekStarts(monday, 1)[0])
+	assert.Len(t, weekStarts(monday, 1<<30), 52)
+	assert.Empty(t, weekStarts(monday, -1))
 }
 
 func TestMedian(t *testing.T) {

@@ -50,6 +50,7 @@ type Trends struct {
 
 // weekStarts returns the start (Monday 00:00 UTC) of each of the last n weeks, oldest first
 func weekStarts(now time.Time, n int) []int64 {
+	n = max(0, min(n, 52))
 	now = now.UTC()
 	daysSinceMonday := (int(now.Weekday()) + 6) % 7
 	current := time.Date(now.Year(), now.Month(), now.Day()-daysSinceMonday, 0, 0, 0, 0, time.UTC).Unix()
@@ -111,6 +112,7 @@ type actionRow struct {
 // Collect counts weekly activity in the repositories matched by repoCond (a condition on the repository table),
 // a nil repoCond counts every repository
 func Collect(ctx context.Context, repoCond builder.Cond, now time.Time, weeks int) (*Trends, error) {
+	weeks = ParseWeeks(weeks)
 	t := &Trends{}
 	for _, start := range weekStarts(now, weeks) {
 		t.Weeks = append(t.Weeks, &Week{Start: start})

@@ -837,7 +837,7 @@ func GetUserRepositories(ctx context.Context, opts SearchRepoOptions) (Repositor
 
 	sess = sess.Where(cond).OrderBy(opts.OrderBy.String())
 	db.SetSessionPagination(sess, &opts) // caps opts.PageSize before it sizes the slice
-	repos := make(RepositoryList, 0, opts.PageSize)
+	repos := make(RepositoryList, 0, db.PreallocSize(opts.PageSize))
 	return repos, count, sess.Find(&repos)
 }
 
