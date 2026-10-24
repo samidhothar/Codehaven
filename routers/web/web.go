@@ -802,6 +802,7 @@ func registerWebRoutes(m *web.Router, webAuth *AuthMiddleware) {
 			m.Get("/audit_logs", admin.ViewAuditLogs)
 			m.Get("/audit_logs/export", admin.ExportAuditLogs)
 			m.Get("/stats", admin.MonitorStats)
+			m.Get("/trends", admin.MonitorTrends)
 			m.Get("/cron", admin.CronTasks)
 			m.Get("/perftrace", admin.PerfTrace)
 			m.Get("/stacktrace", admin.Stacktrace)
@@ -1007,6 +1008,7 @@ func registerWebRoutes(m *web.Router, webAuth *AuthMiddleware) {
 
 		m.Group("/{org}", func() {
 			m.Get("/teams/-/search", org.SearchTeam)
+			m.Get("/trends", org.Trends)
 		}, context.OrgAssignment(context.OrgAssignmentOptions{RequireMember: true}))
 
 		// require owner permission
@@ -1619,6 +1621,9 @@ func registerWebRoutes(m *web.Router, webAuth *AuthMiddleware) {
 		})
 	}, optSignIn, context.RepoAssignment, repo.MustBeNotEmpty, reqRepoActionsReader, actions.MustEnableActions)
 	// end "/{username}/{reponame}/actions"
+
+	// scan reports are Actions artifacts, so they get the same access as the Actions tab
+	m.Get("/{username}/{reponame}/security", optSignIn, context.RepoAssignment, repo.MustBeNotEmpty, reqRepoActionsReader, actions.MustEnableActions, repo.Security)
 
 	m.Group("/{username}/{reponame}/wiki", func() {
 		m.Combo("").

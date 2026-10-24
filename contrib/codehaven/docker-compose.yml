@@ -11,7 +11,17 @@ services:
       GITEA____APP_NAME: CodeHaven
       GITEA__ui__DEFAULT_THEME: codehaven-auto
       GITEA__ui__THEMES: codehaven-auto,codehaven-light,codehaven-dark,gitea-auto,gitea-light,gitea-dark
-      GITEA__server__ROOT_URL: http://localhost:${CODEHAVEN_HTTP_PORT:-3000}/
+      # cross-repository code search on Explore → Code
+      GITEA__indexer__REPO_INDEXER_ENABLED: "true"
+      # outgoing email, see the mailer section of .env.example
+      GITEA__mailer__ENABLED: ${MAILER_ENABLED:-false}
+      GITEA__mailer__PROTOCOL: ${MAILER_PROTOCOL:-smtp+starttls}
+      GITEA__mailer__SMTP_ADDR: ${MAILER_SMTP_ADDR:-}
+      GITEA__mailer__SMTP_PORT: ${MAILER_SMTP_PORT:-587}
+      GITEA__mailer__USER: ${MAILER_USER:-}
+      GITEA__mailer__PASSWD: ${MAILER_PASSWORD:-}
+      GITEA__mailer__FROM: ${MAILER_FROM:-}
+      GITEA__server__ROOT_URL: ${CODEHAVEN_ROOT_URL:-http://localhost:${CODEHAVEN_HTTP_PORT:-3000}/}
       GITEA__server__SSH_PORT: ${CODEHAVEN_SSH_PORT:-2222}
       GITEA__jenkins__ENABLED: "true"
       GITEA__jenkins__URL: http://jenkins:8080
@@ -72,7 +82,48 @@ services:
     volumes:
       - deploy-keys:/keys
 
+  # opens dependency update pull requests, started only with "docker compose --profile renovate up -d"
+  renovate:
+    image: renovate/renovate:41.100.0
+    profiles: [renovate]
+    restart: unless-stopped
+    environment:
+      RENOVATE_PLATFORM: gitea
+      RENOVATE_ENDPOINT: http://gitea:3000/api/v1
+      RENOVATE_TOKEN: ${RENOVATE_TOKEN:-}
+      RENOVATE_AUTODISCOVER: "true"
+      # clone through the container network, the browser address in clone URLs does not work in here
+      RENOVATE_GIT_URL: endpoint
+      RENOVATE_GIT_AUTHOR: ${RENOVATE_GIT_AUTHOR:-Renovate Bot <renovate-bot@noreply.localhost>}
+      # optional, lets update pull requests include release notes from github.com
+      GITHUB_COM_TOKEN: ${RENOVATE_GITHUB_COM_TOKEN:-}
+    entrypoint: ["/bin/sh", "-c"]
+    command: ["while true; do renovate; sleep ${RENOVATE_INTERVAL_SECONDS:-3600}; done"]
+    depends_on:
+      - gitea
+
+  # runs Actions workflows such as the Trivy security scan, started only with "docker compose --profile actions up -d"
+  runner:
+    image: docker.gitea.com/act_runner:5.2.2
+    profiles: [actions]
+    restart: unless-stopped
+    environment:
+      # jobs run in their own containers and reach CodeHaven at ROOT_URL, so the runner uses it too
+      GITEA_INSTANCE_URL: ${CODEHAVEN_ROOT_URL:-http://localhost:${CODEHAVEN_HTTP_PORT:-3000}/}
+      GITEA_RUNNER_REGISTRATION_TOKEN: ${RUNNER_REGISTRATION_TOKEN:-}
+      GITEA_RUNNER_NAME: codehaven-runner
+      CONFIG_FILE: /config.yaml
+    volumes:
+      - runner-data:/data
+      - ./runner/config.yaml:/config.yaml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    depends_on:
+      - gitea
+
 volumes:
   codehaven-data:
+  runner-data:
   jenkins-home:
   deploy-keys:

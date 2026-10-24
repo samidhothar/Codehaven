@@ -44,6 +44,11 @@
 				{{end}}
 			</a>
 			{{end}}
+			{{if .IsOrganizationMember}}
+			<a class="{{if $.PageIsOrgTrends}}active {{end}}item" href="{{$.OrgLink}}/trends">
+				{{svg "octicon-graph"}} {{ctx.Locale.Tr "insights.trends"}}
+			</a>
+			{{end}}
 			{{if and EnableTimetracking .IsOrganizationOwner}}
 			<a class="{{if $.PageIsOrgTimes}}active{{end}} item" href="{{$.OrgLink}}/worktime">
 				{{svg "octicon-clock"}} {{ctx.Locale.Tr "org.worktime"}}

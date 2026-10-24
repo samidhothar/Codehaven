@@ -104,7 +104,7 @@
 		<a class="{{if .PageIsAdminNotices}}active {{end}}item" href="{{AppSubUrl}}/-/admin/notices">
 			{{ctx.Locale.Tr "admin.notices"}}
 		</a>
-		<details class="item" {{if or .PageIsAdminMonitorAudit .PageIsAdminMonitorStats .PageIsAdminMonitorCron .PageIsAdminMonitorQueue .PageIsAdminMonitorTrace}}open{{end}}>
+		<details class="item" {{if or .PageIsAdminMonitorAudit .PageIsAdminMonitorStats .PageIsAdminMonitorTrends .PageIsAdminMonitorCron .PageIsAdminMonitorQueue .PageIsAdminMonitorTrace}}open{{end}}>
 			<summary>{{ctx.Locale.Tr "admin.monitor"}}</summary>
 			<div class="menu">
 				<a class="{{if .PageIsAdminMonitorAudit}}active {{end}}item" href="{{AppSubUrl}}/-/admin/monitor/audit_logs">
@@ -112,6 +112,9 @@
 				</a>
 				<a class="{{if .PageIsAdminMonitorStats}}active {{end}}item" href="{{AppSubUrl}}/-/admin/monitor/stats">
 					{{ctx.Locale.Tr "admin.monitor.stats"}}
+				</a>
+				<a class="{{if .PageIsAdminMonitorTrends}}active {{end}}item" href="{{AppSubUrl}}/-/admin/monitor/trends">
+					{{ctx.Locale.Tr "insights.trends"}}
 				</a>
 				<a class="{{if .PageIsAdminMonitorCron}}active {{end}}item" href="{{AppSubUrl}}/-/admin/monitor/cron">
 					{{ctx.Locale.Tr "admin.monitor.cron"}}

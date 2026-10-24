@@ -78,6 +78,46 @@ To deploy to a real machine, add the public key to `~/.ssh/authorized_keys` of t
 | Jenkins | <http://localhost:8080> (sign in with the admin account from `.env`) |
 | Test VM web server | <http://localhost:8081> |
 
+## Dependency updates with Renovate
+
+[Renovate](https://docs.renovatebot.com) watches your repositories and opens pull requests when a dependency (npm, Go modules, Docker images, pip, Maven and many more) has a new version. It is included in the Docker setup but only starts when you ask for it:
+
+1. In CodeHaven, register a user for the bot, for example `renovate-bot`.
+2. Signed in as that user, open **Settings → Applications** and generate a token with **write** access to *repository* and *issue*, and **read** access to *user*, *organization* and *misc*.
+3. Put the token in `.env` as `RENOVATE_TOKEN`.
+4. Add `renovate-bot` as a collaborator with **Write** access to each repository it should update (or to an organization team).
+5. Run `docker compose --profile renovate up -d`.
+
+On its first run Renovate opens a **Configure Renovate** pull request in each repository; merge it to start receiving update pull requests. Renovate checks again every hour (`RENOVATE_INTERVAL_SECONDS`).
+
+## Security scanning
+
+Each repository has a **Security** tab, next to **Actions**, that lists what [Trivy](https://trivy.dev) found on the default branch: known vulnerabilities in dependencies, committed secrets, and misconfigurations in Dockerfiles, Kubernetes manifests and Terraform. Findings can be filtered by severity and type, and link to the affected file and line.
+
+The scan runs as an Actions workflow, so the Docker setup includes a runner that starts only when you ask for it:
+
+1. In `.env`, set `CODEHAVEN_ROOT_URL` to an address that containers can reach, for example `http://host.docker.internal:3000/` on Docker Desktop. Workflow jobs clone and upload results through it, which does not work with `localhost`.
+2. In **Site Administration → Actions → Runners**, click **Create new Runner** and put the token in `.env` as `RUNNER_REGISTRATION_TOKEN`.
+3. Run `docker compose --profile actions up -d`.
+4. Open a repository's **Security** tab and commit the workflow it shows as `.gitea/workflows/security.yml`.
+
+The tab shows the report of the newest successful run on the default branch that uploaded a `trivy-results` artifact. It is visible to everyone who can see the repository's Actions.
+
+## Team and administration features
+
+These come with CodeHaven and need at most a setting:
+
+| Feature | Where to find it |
+|---|---|
+| Cross-repository code search | **Explore → Code**. Turned on in the Docker setup with `GITEA__indexer__REPO_INDEXER_ENABLED`. |
+| Audit log | **Site Administration → Audit Log** for the whole server, **Settings → Audit Log** in a repository or organization. |
+| Time tracking | **Start timer** or **Add time** in the issue sidebar; totals appear on the issue and in milestones. |
+| Disable an account but keep its history | **Site Administration → User Accounts → Edit → Disable sign-in**. Commits, issues and comments stay in place. |
+| Microsoft Teams | **Settings → Webhooks → Add webhook → Microsoft Teams** in a repository or organization. |
+| Email through SendGrid | Set the `MAILER_*` values in `.env` (the example there is for SendGrid), then `docker compose up -d`. |
+| Separate storage for Git LFS, packages and artifacts | Give each its own location with the `[lfs]`, `[packages]` and `[actions.artifacts]` sections in `app.ini` (`STORAGE_TYPE` plus a path or S3-compatible bucket). See the [storage documentation](https://docs.gitea.com/administration/config-cheat-sheet#storage-storage). |
+| High availability | Run several CodeHaven instances behind a load balancer with an external PostgreSQL or MySQL database, Redis for cache, sessions and queues, and shared or S3-compatible storage. The [Gitea Helm chart](https://gitea.com/gitea/helm-gitea) sets this up on Kubernetes. |
+
 ## Make it your own
 
 The theme kit lives in [`contrib/codehaven/custom`](contrib/codehaven/custom) and is mounted into the container as Gitea's custom folder, so you can rebrand without rebuilding:

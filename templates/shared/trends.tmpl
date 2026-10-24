@@ -1,0 +1,48 @@
+<div class="trends-page">
+	<div class="flex-text-block tw-flex-wrap tw-justify-between tw-mb-4">
+		<h2 class="tw-m-0">{{ctx.Locale.Tr "insights.trends"}}</h2>
+		<div class="ui small compact menu" role="group" aria-label="{{ctx.Locale.Tr "insights.period"}}">
+			{{range $weeks := .TrendsPeriods}}
+			<a class="{{if eq $weeks $.TrendsWeeks}}active {{end}}item" href="{{$.TrendsLink}}?weeks={{$weeks}}" {{if eq $weeks $.TrendsWeeks}}aria-current="page"{{end}}>{{ctx.Locale.Tr "insights.weeks" $weeks}}</a>
+			{{end}}
+		</div>
+	</div>
+	<div class="trends-cards">
+		<div class="trends-card">
+			<div class="trends-card-label">{{svg "octicon-issue-opened"}} {{ctx.Locale.Tr "insights.issues_opened"}}</div>
+			<div class="trends-card-value">{{.Trends.IssuesOpened}}</div>
+		</div>
+		<div class="trends-card">
+			<div class="trends-card-label">{{svg "octicon-issue-closed"}} {{ctx.Locale.Tr "insights.issues_closed"}}</div>
+			<div class="trends-card-value">{{.Trends.IssuesClosed}}</div>
+		</div>
+		<div class="trends-card">
+			<div class="trends-card-label">{{svg "octicon-git-pull-request"}} {{ctx.Locale.Tr "insights.pulls_opened"}}</div>
+			<div class="trends-card-value">{{.Trends.PullsOpened}}</div>
+		</div>
+		<div class="trends-card">
+			<div class="trends-card-label">{{svg "octicon-git-merge"}} {{ctx.Locale.Tr "insights.pulls_merged"}}</div>
+			<div class="trends-card-value">{{.Trends.PullsMerged}}</div>
+		</div>
+		<div class="trends-card">
+			<div class="trends-card-label">{{svg "octicon-clock"}} {{ctx.Locale.Tr "insights.median_merge_time"}}</div>
+			<div class="trends-card-value">{{if ge .Trends.MedianMergeSeconds 0}}{{Sec2Hour .Trends.MedianMergeSeconds}}{{else}}–{{end}}</div>
+		</div>
+		<div class="trends-card">
+			<div class="trends-card-label">{{svg "octicon-people"}} {{ctx.Locale.Tr "insights.contributors"}}</div>
+			<div class="trends-card-value">{{.Trends.Contributors}}</div>
+		</div>
+	</div>
+	<div id="trends-charts" data-weeks="{{JsonUtils.EncodeToString .Trends.Weeks}}"
+		data-locale-issues="{{ctx.Locale.Tr "insights.chart_issues"}}"
+		data-locale-pulls="{{ctx.Locale.Tr "insights.chart_pulls"}}"
+		data-locale-activity="{{ctx.Locale.Tr "insights.chart_activity"}}"
+		data-locale-issues-opened="{{ctx.Locale.Tr "insights.issues_opened"}}"
+		data-locale-issues-closed="{{ctx.Locale.Tr "insights.issues_closed"}}"
+		data-locale-pulls-opened="{{ctx.Locale.Tr "insights.pulls_opened"}}"
+		data-locale-pulls-merged="{{ctx.Locale.Tr "insights.pulls_merged"}}"
+		data-locale-pushes="{{ctx.Locale.Tr "insights.pushes"}}"
+		data-locale-contributors="{{ctx.Locale.Tr "insights.contributors"}}"
+	></div>
+	<p class="tw-text-text-light tw-mt-4">{{ctx.Locale.Tr "insights.note"}}</p>
+</div>

@@ -1,0 +1,100 @@
+{{template "base/head" .}}
+<div role="main" aria-label="{{.Title}}" class="page-content repository security">
+	{{template "repo/header" .}}
+	<div class="ui container">
+		<div class="flex-text-block tw-flex-wrap tw-justify-between tw-mb-4">
+			<h2 class="tw-m-0">{{ctx.Locale.Tr "repo.security"}}</h2>
+			{{if .Scan}}
+			<div class="tw-text-text-light">
+				{{ctx.Locale.Tr "repo.security.scanned" (HTMLFormat `<a href="%s/commit/%s">%s</a>` $.RepoLink .Scan.CommitSHA (ShortSha .Scan.CommitSHA)) (HTMLFormat `<a href="%s">#%d</a>` .Scan.Run.Link .Scan.Run.Index) (DateUtils.TimeSince .Scan.Run.Updated)}}
+			</div>
+			{{end}}
+		</div>
+		{{if .ReportBroken}}
+			<div class="ui warning message">{{ctx.Locale.Tr "repo.security.report_broken" .ArtifactName}}</div>
+		{{end}}
+		{{if .Scan}}
+			<div class="security-severities">
+				{{range $sev := .Severities}}
+				<a class="security-severity-card{{if eq $sev $.Severity}} active{{end}}" data-severity="{{$sev}}" href="?kind={{$.Kind}}{{if ne $sev $.Severity}}&severity={{$sev}}{{end}}">
+					<span class="security-severity-count">{{index $.Scan.Report.SeverityCounts $sev}}</span>
+					<span>{{ctx.Locale.Tr (printf "repo.security.severity.%s" $sev)}}</span>
+				</a>
+				{{end}}
+			</div>
+			<div class="ui secondary pointing tabular menu tw-mt-4">
+				<a class="{{if not .Kind}}active {{end}}item" href="?severity={{.Severity}}">{{ctx.Locale.Tr "repo.security.kind.all"}} <span class="ui small label">{{len .Scan.Report.Findings}}</span></a>
+				{{range $kind := .Kinds}}
+				<a class="{{if eq $kind $.Kind}}active {{end}}item" href="?kind={{$kind}}&severity={{$.Severity}}">{{ctx.Locale.Tr (printf "repo.security.kind.%s" $kind)}} <span class="ui small label">{{index $.Scan.Report.KindCounts $kind}}</span></a>
+				{{end}}
+			</div>
+			{{if .Findings}}
+			<div class="ui attached segment tw-p-0">
+				<table class="ui very basic table security-table">
+					<thead>
+						<tr>
+							<th>{{ctx.Locale.Tr "repo.security.col.severity"}}</th>
+							<th>{{ctx.Locale.Tr "repo.security.col.finding"}}</th>
+							<th>{{ctx.Locale.Tr "repo.security.col.location"}}</th>
+							<th>{{ctx.Locale.Tr "repo.security.col.fix"}}</th>
+						</tr>
+					</thead>
+					<tbody>
+						{{range .Findings}}
+						<tr>
+							<td><span class="security-severity" data-severity="{{.Severity}}">{{ctx.Locale.Tr (printf "repo.security.severity.%s" .Severity)}}</span></td>
+							<td>
+								<div class="tw-font-semibold">{{.Title}}</div>
+								<div class="tw-text-text-light tw-text-12">
+									{{ctx.Locale.Tr (printf "repo.security.kind.%s" .Kind)}} ·
+									{{if .URL}}<a href="{{.URL}}" target="_blank" rel="noopener noreferrer">{{.ID}}</a>{{else}}{{.ID}}{{end}}
+								</div>
+							</td>
+							<td class="tw-break-anywhere">
+								{{if .IsFile}}<a href="{{$.RepoLink}}/src/commit/{{$.Scan.CommitSHA}}/{{PathEscapeSegments .Target}}{{if .Line}}#L{{.Line}}{{end}}">{{.Target}}{{if .Line}}:{{.Line}}{{end}}</a>{{else}}{{.Target}}{{end}}
+								{{if .Package}}<div class="tw-text-text-light tw-text-12"><code>{{.Package}}@{{.Installed}}</code></div>{{end}}
+							</td>
+							<td>
+								{{if .Fixed}}<code>{{.Fixed}}</code>{{else if eq .Kind "vulnerability"}}<span class="tw-text-text-light">{{ctx.Locale.Tr "repo.security.no_fix"}}</span>{{end}}
+							</td>
+						</tr>
+						{{end}}
+					</tbody>
+				</table>
+			</div>
+			{{else}}
+			<div class="ui attached segment center aligned tw-py-8">
+				{{svg "octicon-shield-check" 32 "tw-text-green"}}
+				<p class="tw-mt-2">{{ctx.Locale.Tr "repo.security.no_findings"}}</p>
+			</div>
+			{{end}}
+		{{else}}
+			<div class="ui segment">
+				<h3 class="flex-text-block">{{svg "octicon-shield"}} {{ctx.Locale.Tr "repo.security.setup_title"}}</h3>
+				<p>{{ctx.Locale.Tr "repo.security.setup_desc" .ArtifactName .Repository.DefaultBranch}}</p>
+				<p>{{ctx.Locale.Tr "repo.security.setup_file"}} <code>.gitea/workflows/security.yml</code></p>
+				<pre class="security-workflow"><code>name: Security scan
+on:
+  push:
+    branches: [{{.Repository.DefaultBranch}}]
+  schedule:
+    - cron: '0 3 * * 1'
+  workflow_dispatch:
+
+jobs:
+  trivy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: docker://aquasec/trivy:0.75.0
+        with:
+          args: fs --scanners vuln,secret,misconfig --format json --output trivy-results.json .
+      - uses: actions/upload-artifact@v4
+        with:
+          name: {{.ArtifactName}}
+          path: trivy-results.json</code></pre>
+			</div>
+		{{end}}
+	</div>
+</div>
+{{template "base/footer" .}}

@@ -75,6 +75,7 @@ import {initRepoIssueStickyBar} from './features/repo-issue-sticky-bar.ts';
 import {initRepoIssueCommentTools} from './features/repo-issue-comment-tools.ts';
 import {initRepoPullCheckoutButton} from './features/repo-pull-checkout.ts';
 import {initRepoFileWrapToggle} from './features/repo-file-wrap.ts';
+import {initTrendsCharts} from './features/trends.ts';
 import {initProjectWorkflow} from './features/project-workflow.ts';
 import {initDevtest} from './modules/devtest.ts';
 import {initRepoWatch} from './features/repo-watch.ts';
@@ -109,6 +110,7 @@ const initPerformanceTracer = callInitFunctions([
   initRepoIssueCommentTools,
   initRepoPullCheckoutButton,
   initRepoFileWrapToggle,
+  initTrendsCharts,
 
   initCommonIssueListQuickGoto,
 
