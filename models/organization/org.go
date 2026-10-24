@@ -486,7 +486,7 @@ func GetOrgUsersByOrgID(ctx context.Context, opts *FindOrgMembersOpts) ([]*OrgUs
 	if opts.ListOptions.PageSize > 0 {
 		db.SetSessionPagination(sess, opts)
 
-		ous := make([]*OrgUser, 0, opts.PageSize)
+		ous := make([]*OrgUser, 0, db.PreallocSize(opts.PageSize))
 		return ous, sess.Find(&ous)
 	}
 

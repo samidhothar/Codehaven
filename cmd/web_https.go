@@ -15,8 +15,6 @@ import (
 )
 
 var tlsVersionStringMap = map[string]uint16{
-	"tlsv1.0": tls.VersionTLS10,
-	"tlsv1.1": tls.VersionTLS11,
 	"tlsv1.2": tls.VersionTLS12,
 	"tlsv1.3": tls.VersionTLS13,
 }
@@ -65,7 +63,8 @@ func buildCipherStringMap() map[string]uint16 {
 		"ecdhe_rsa_with_chacha20_poly1305":   tls.TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305,
 		"ecdhe_ecdsa_with_chacha20_poly1305": tls.TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305,
 	}
-	for _, cipher := range append(tls.CipherSuites(), tls.InsecureCipherSuites()...) {
+	// tls.InsecureCipherSuites are left out, configuring one only logs a warning
+	for _, cipher := range tls.CipherSuites() {
 		ciphers[strings.ToLower(strings.TrimPrefix(cipher.Name, "TLS_"))] = cipher.ID
 	}
 	return ciphers
@@ -76,8 +75,13 @@ func buildCipherStringMap() map[string]uint16 {
 func applyTLSSettings(tlsConfig *tls.Config) *tls.Config {
 	// the listener is already TLS wrapped when it reaches http.Server, so it never sets ALPN for us
 	tlsConfig.NextProtos = append(tlsConfig.NextProtos, "h2", "http/1.1")
-	tlsConfig.MinVersion = toTLSVersion(setting.SSLMinimumVersion)
+	// TLS 1.0 and 1.1 are deprecated by RFC 8996
+	tlsConfig.MinVersion = max(toTLSVersion(setting.SSLMinimumVersion), tls.VersionTLS12)
 	tlsConfig.MaxVersion = toTLSVersion(setting.SSLMaximumVersion)
+	if tlsConfig.MaxVersion != 0 && tlsConfig.MaxVersion < tlsConfig.MinVersion {
+		log.Warn("SSL_MAX_VERSION is below TLS 1.2 and is ignored")
+		tlsConfig.MaxVersion = 0
+	}
 
 	if curves := lookupAll(setting.SSLCurvePreferences, curveStringMap, "curve"); len(curves) > 0 {
 		tlsConfig.CurvePreferences = curves

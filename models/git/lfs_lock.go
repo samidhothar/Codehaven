@@ -123,7 +123,7 @@ func GetLFSLockByRepoID(ctx context.Context, repoID int64, page, pageSize int) (
 		}
 		e.Limit(pageSize, start)
 	}
-	lfsLocks := make(LFSLockList, 0, pageSize)
+	lfsLocks := make(LFSLockList, 0, db.PreallocSize(pageSize))
 	return lfsLocks, e.OrderBy("id").Find(&lfsLocks, &LFSLock{RepoID: repoID})
 }
 

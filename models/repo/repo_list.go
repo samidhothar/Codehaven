@@ -578,7 +578,7 @@ func SearchRepositoryByCondition(ctx context.Context, opts SearchRepoOptions, co
 	if opts.PageSize > 0 {
 		defaultSize = opts.PageSize
 	}
-	repos := make(RepositoryList, 0, defaultSize)
+	repos := make(RepositoryList, 0, db.PreallocSize(defaultSize))
 	if err := sess.Find(&repos); err != nil {
 		return nil, 0, fmt.Errorf("Repo: %w", err)
 	}
@@ -836,8 +836,8 @@ func GetUserRepositories(ctx context.Context, opts SearchRepoOptions) (Repositor
 	}
 
 	sess = sess.Where(cond).OrderBy(opts.OrderBy.String())
+	db.SetSessionPagination(sess, &opts) // caps opts.PageSize before it sizes the slice
 	repos := make(RepositoryList, 0, opts.PageSize)
-	db.SetSessionPagination(sess, &opts)
 	return repos, count, sess.Find(&repos)
 }
 

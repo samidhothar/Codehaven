@@ -165,7 +165,7 @@ func SearchUsers(ctx context.Context, opts SearchUserOptions) (users []*User, _ 
 
 	// the sql may contain JOIN, so we must only select User related columns
 	sessQuery.Select("`user`.*")
-	users = make([]*User, 0, opts.PageSize)
+	users = make([]*User, 0, db.PreallocSize(opts.PageSize))
 	return users, count, sessQuery.Find(&users)
 }
 

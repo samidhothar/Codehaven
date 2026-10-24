@@ -54,3 +54,9 @@ func TestFind(t *testing.T) {
 	assert.Equal(t, cnt, newCnt)
 	assert.Len(t, repoUnits, repoUnitCount)
 }
+
+func TestPreallocSize(t *testing.T) {
+	assert.Equal(t, 0, db.PreallocSize(-5))
+	assert.Equal(t, 30, db.PreallocSize(30))
+	assert.Equal(t, 1000, db.PreallocSize(1<<40))
+}

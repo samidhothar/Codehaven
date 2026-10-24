@@ -155,7 +155,7 @@ func GetImageTags(ctx context.Context, ownerID int64, image string, n int, last 
 	if n > 0 {
 		sess = sess.Limit(n)
 
-		tags = make([]string, 0, n)
+		tags = make([]string, 0, db.PreallocSize(n))
 	} else {
 		tags = make([]string, 0, 10)
 	}
@@ -282,6 +282,6 @@ func GetRepositories(ctx context.Context, actor *user_model.User, n int, last st
 		Asc("package_property.value").
 		Limit(n)
 
-	repositories := make([]string, 0, n)
+	repositories := make([]string, 0, db.PreallocSize(n))
 	return repositories, sess.Find(&repositories)
 }

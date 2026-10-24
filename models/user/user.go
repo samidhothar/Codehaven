@@ -365,7 +365,7 @@ func GetUserFollowers(ctx context.Context, u, viewer *User, listOptions db.ListO
 	if listOptions.Page > 0 {
 		db.SetSessionPagination(sess, &listOptions)
 
-		users := make([]*User, 0, listOptions.PageSize)
+		users := make([]*User, 0, db.PreallocSize(listOptions.PageSize))
 		count, err := sess.FindAndCount(&users)
 		return users, count, err
 	}
@@ -387,7 +387,7 @@ func GetUserFollowing(ctx context.Context, u, viewer *User, listOptions db.ListO
 	if listOptions.Page > 0 {
 		db.SetSessionPagination(sess, &listOptions)
 
-		users := make([]*User, 0, listOptions.PageSize)
+		users := make([]*User, 0, db.PreallocSize(listOptions.PageSize))
 		count, err := sess.FindAndCount(&users)
 		return users, count, err
 	}

@@ -16,7 +16,7 @@ func CountColumns(ctx context.Context, projectID int64) (int64, error) {
 
 // GetColumns returns a list of columns for a project with pagination
 func GetColumns(ctx context.Context, projectID int64, opts db.ListOptions) (ColumnList, error) {
-	columns := make([]*Column, 0, opts.PageSize)
+	columns := make([]*Column, 0, db.PreallocSize(opts.PageSize))
 	s := db.GetEngine(ctx).Where("project_id=?", projectID).OrderBy("sorting, id")
 	if !opts.IsListAll() {
 		db.SetSessionPagination(s, &opts)

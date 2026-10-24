@@ -165,7 +165,7 @@ func FindReactions(ctx context.Context, opts FindReactionsOptions) (ReactionList
 	if opts.Page > 0 {
 		db.SetSessionPagination(sess, &opts)
 
-		reactions := make([]*Reaction, 0, opts.PageSize)
+		reactions := make([]*Reaction, 0, db.PreallocSize(opts.PageSize))
 		count, err := sess.FindAndCount(&reactions)
 		return reactions, count, err
 	}

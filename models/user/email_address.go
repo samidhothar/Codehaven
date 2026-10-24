@@ -403,7 +403,7 @@ func SearchEmails(ctx context.Context, opts *SearchEmailOptions) ([]*SearchEmail
 
 	opts.SetDefaultValues()
 
-	emails := make([]*SearchEmailResult, 0, opts.PageSize)
+	emails := make([]*SearchEmailResult, 0, db.PreallocSize(opts.PageSize))
 	err = db.GetEngine(ctx).Table("email_address").
 		Select("email_address.*, `user`.name, `user`.full_name").
 		Join("INNER", "`user`", "`user`.id = email_address.uid").

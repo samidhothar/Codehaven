@@ -28,8 +28,14 @@ func newFileBackend(rootPath string, maxLifetime int64) *fileBackend {
 	return &fileBackend{rootPath: filepath.Clean(rootPath), maxLifetime: time.Duration(maxLifetime) * time.Second}
 }
 
-func (b *fileBackend) filepath(sid string) string {
-	return filepath.Join(b.rootPath, sid[0:1], sid[1:2], sid)
+var errInvalidSessionID = errors.New("invalid session id")
+
+// filepath also rejects a malformed id, it becomes part of the file path
+func (b *fileBackend) filepath(sid string) (string, error) {
+	if !isValidSessionID(sid) {
+		return "", errInvalidSessionID
+	}
+	return filepath.Join(b.rootPath, sid[0:1], sid[1:2], sid), nil
 }
 
 func ignoreNotExist(err error) error {
@@ -42,7 +48,10 @@ func ignoreNotExist(err error) error {
 func (b *fileBackend) load(sid string) ([]byte, error) {
 	b.lock.RLock()
 	defer b.lock.RUnlock()
-	filename := b.filepath(sid)
+	filename, err := b.filepath(sid)
+	if err != nil {
+		return nil, err
+	}
 	stat, err := os.Lstat(filename)
 	if err != nil {
 		return nil, ignoreNotExist(err)
@@ -64,7 +73,10 @@ func (b *fileBackend) load(sid string) ([]byte, error) {
 func (b *fileBackend) save(sid string, data []byte, create bool) error {
 	b.lock.RLock()
 	defer b.lock.RUnlock()
-	filename := b.filepath(sid)
+	filename, err := b.filepath(sid)
+	if err != nil {
+		return err
+	}
 	if create {
 		if err := os.MkdirAll(filepath.Dir(filename), 0o700); err != nil {
 			return err
@@ -89,7 +101,11 @@ func (b *fileBackend) save(sid string, data []byte, create bool) error {
 func (b *fileBackend) destroy(sid string) error {
 	b.lock.Lock()
 	defer b.lock.Unlock()
-	return ignoreNotExist(os.Remove(b.filepath(sid)))
+	filename, err := b.filepath(sid)
+	if err != nil {
+		return err
+	}
+	return ignoreNotExist(os.Remove(filename))
 }
 
 func (b *fileBackend) expired(path string) bool {

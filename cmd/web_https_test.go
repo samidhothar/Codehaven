@@ -40,7 +40,7 @@ func TestApplyTLSSettingsUnsetKeepsGoDefaults(t *testing.T) {
 	unsetTLSSettings(t)
 
 	tlsConfig := applyTLSSettings(&tls.Config{})
-	assert.Zero(t, tlsConfig.MinVersion)
+	assert.Equal(t, uint16(tls.VersionTLS12), tlsConfig.MinVersion)
 	assert.Zero(t, tlsConfig.MaxVersion)
 	assert.Nil(t, tlsConfig.CurvePreferences)
 	assert.Nil(t, tlsConfig.CipherSuites)
@@ -91,19 +91,28 @@ func TestCurveStringMapCoversGoCurves(t *testing.T) {
 
 // TestCipherStringMapCoversLegacyNames pins the names accepted before the map was derived
 // from crypto/tls, so no existing SSL_CIPHER_SUITES config silently stops resolving
-func TestCipherStringMapCoversLegacyNames(t *testing.T) {
+func TestApplyTLSSettingsRejectsDeprecatedVersions(t *testing.T) {
+	unsetTLSSettings(t)
+	t.Cleanup(test.MockVariableValue(&setting.SSLMinimumVersion, "tlsv1.0"))
+	t.Cleanup(test.MockVariableValue(&setting.SSLMaximumVersion, "tlsv1.1"))
+
+	tlsConfig := applyTLSSettings(&tls.Config{})
+	assert.Equal(t, uint16(tls.VersionTLS12), tlsConfig.MinVersion)
+	assert.Zero(t, tlsConfig.MaxVersion)
+}
+
+func TestCipherStringMapNames(t *testing.T) {
 	for _, name := range []string{
-		"rsa_with_rc4_128_sha", "rsa_with_3des_ede_cbc_sha", "rsa_with_aes_128_cbc_sha",
-		"rsa_with_aes_256_cbc_sha", "rsa_with_aes_128_cbc_sha256", "rsa_with_aes_128_gcm_sha256",
-		"rsa_with_aes_256_gcm_sha384", "ecdhe_ecdsa_with_rc4_128_sha", "ecdhe_ecdsa_with_aes_128_cbc_sha",
-		"ecdhe_ecdsa_with_aes_256_cbc_sha", "ecdhe_rsa_with_rc4_128_sha", "ecdhe_rsa_with_3des_ede_cbc_sha",
-		"ecdhe_rsa_with_aes_128_cbc_sha", "ecdhe_rsa_with_aes_256_cbc_sha", "ecdhe_ecdsa_with_aes_128_cbc_sha256",
-		"ecdhe_rsa_with_aes_128_cbc_sha256", "ecdhe_rsa_with_aes_128_gcm_sha256", "ecdhe_ecdsa_with_aes_128_gcm_sha256",
+		"ecdhe_rsa_with_aes_128_gcm_sha256", "ecdhe_ecdsa_with_aes_128_gcm_sha256",
 		"ecdhe_rsa_with_aes_256_gcm_sha384", "ecdhe_ecdsa_with_aes_256_gcm_sha384",
 		"ecdhe_rsa_with_chacha20_poly1305_sha256", "ecdhe_ecdsa_with_chacha20_poly1305_sha256",
 		"ecdhe_rsa_with_chacha20_poly1305", "ecdhe_ecdsa_with_chacha20_poly1305",
 		"aes_128_gcm_sha256", "aes_256_gcm_sha384", "chacha20_poly1305_sha256",
 	} {
 		assert.NotZero(t, cipherStringMap[name], "cipher %q", name)
+	}
+	for _, insecure := range tls.InsecureCipherSuites() {
+		name := strings.ToLower(strings.TrimPrefix(insecure.Name, "TLS_"))
+		assert.NotContains(t, cipherStringMap, name, "insecure cipher %q must not be configurable", name)
 	}
 }

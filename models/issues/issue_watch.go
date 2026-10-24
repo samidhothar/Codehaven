@@ -111,7 +111,7 @@ func GetIssueWatchers(ctx context.Context, issueID int64, listOptions db.ListOpt
 
 	if listOptions.Page > 0 {
 		db.SetSessionPagination(sess, &listOptions)
-		watches := make([]*IssueWatch, 0, listOptions.PageSize)
+		watches := make([]*IssueWatch, 0, db.PreallocSize(listOptions.PageSize))
 		return watches, sess.Find(&watches)
 	}
 	watches := make([]*IssueWatch, 0, 8)

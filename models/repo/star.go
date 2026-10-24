@@ -81,7 +81,7 @@ func GetStargazers(ctx context.Context, repo *Repository, opts db.ListOptions) (
 	if opts.Page > 0 {
 		db.SetSessionPagination(sess, &opts)
 
-		users := make([]*user_model.User, 0, opts.PageSize)
+		users := make([]*user_model.User, 0, db.PreallocSize(opts.PageSize))
 		return users, sess.Find(&users)
 	}
 

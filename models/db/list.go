@@ -30,6 +30,14 @@ func SetSessionPagination(sess Engine, p Paginator) {
 	sess.Limit(take, skip)
 }
 
+// maxPrealloc bounds slice capacities taken from request values, a larger result still grows the slice
+const maxPrealloc = 1000
+
+// PreallocSize returns a safe capacity for a slice sized by a request value such as a page size
+func PreallocSize(n int) int {
+	return min(max(n, 0), maxPrealloc)
+}
+
 // ListOptions options to paginate results
 type ListOptions struct {
 	PageSize int

@@ -138,7 +138,7 @@ func SearchTeam(ctx context.Context, opts *SearchTeamOptions) (TeamList, int64, 
 
 	db.SetSessionPagination(sess, opts)
 
-	teams := make([]*Team, 0, opts.PageSize)
+	teams := make([]*Team, 0, db.PreallocSize(opts.PageSize))
 	count, err := sess.OrderBy("CASE WHEN name=? THEN '' ELSE lower_name END", OwnerTeamName).FindAndCount(&teams)
 	if err != nil {
 		return nil, 0, err

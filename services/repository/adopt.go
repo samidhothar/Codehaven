@@ -314,7 +314,7 @@ func ListUnadoptedRepositories(ctx context.Context, query string, opts *db.ListO
 
 	start := int64((opts.Page - 1) * opts.PageSize)
 	unadopted := &unadoptedRepositories{
-		repositories: make([]string, 0, opts.PageSize),
+		repositories: make([]string, 0, db.PreallocSize(opts.PageSize)),
 		start:        start,
 		end:          start + int64(opts.PageSize),
 		count:        0,
